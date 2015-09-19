@@ -4,7 +4,7 @@
 ODSCharts Code Functions
 ========================
 
-.. automodule:: odscharts.sheet
+.. automodule:: odscharts.spreadsheet
    :members:
 
 

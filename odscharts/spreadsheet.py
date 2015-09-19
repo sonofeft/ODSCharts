@@ -114,18 +114,18 @@ class SpreadSheet(object):
 
     def add_sheet(self, sheetname, list_of_rows):
         """Create a new sheet in the spreadsheet with "sheetname" as its name.
-
+           
            the list_of_rows will be placed at "A1" and should be: 
             - row 1 is labels
             - row 2 is units
             - row 3 through N is float or string entries
            
             for example:
-            list_of_rows = [['Altitude','Pressure','Temperature'], 
-                            ['feet','psia','degR'], 
-                            [0, 14.7, 518.7], [5000, 12.23, 500.8], 
-                            [10000, 10.11, 483.0], [60000, 1.04, 390]]
-           
+            list_of_rows = 
+            [['Altitude','Pressure','Temperature'], 
+            ['feet','psia','degR'], 
+            [0, 14.7, 518.7], [5000, 12.23, 500.8], 
+            [10000, 10.11, 483.0], [60000, 1.04, 390]]
         """
         def fix_ns( shortname ): 
             """remove namespace shortcuts from name"""
