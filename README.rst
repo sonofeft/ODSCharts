@@ -28,6 +28,7 @@ See PyPI page at:`<https://pypi.python.org/pypi/odscharts>`_
 ODSCharts will create ods files readable by either Microsoft Excel or OpenOffice.
 
 The format is a very narrow subset of full spreadsheet support::
+
     #. All sheets contain either a table of numbers or a chart object
         - A table of numbers: 
             - starts at "A1"
