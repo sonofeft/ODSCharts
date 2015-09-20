@@ -64,7 +64,13 @@ class MyTest(unittest.TestCase):
                         [10000, 10.11, 483.0], [60000, 1.04, 390]]
         
         self.myclass.add_sheet('Alt_Data', list_of_rows)
+        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data')
+        #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')
+        #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
+        
+        
         self.myclass.save( filename=os.path.join(here,'performance'), debug=False)
+        
 
 
 if __name__ == '__main__':

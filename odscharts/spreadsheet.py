@@ -42,6 +42,9 @@ import zipfile
 import os
 import time
 from lxml import etree as ET
+from data_table_desc import DataTableDesc
+from plot_table_desc import PlotTableDesc
+from metainf import add_ObjectN
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -54,6 +57,8 @@ __license__ = 'GPL-3'
 exec( open(os.path.join( here,'_version.py' )).read() )  # creates local __version__ variable
 __email__ = "cet@appliedpython.com"
 __status__ = "3 - Alpha" # "3 - Alpha", "4 - Beta", "5 - Production/Stable"
+
+TABLE_INSERT_POINT = 1  # just after "table:calculation-settings" Element
 
 
 def load_template_xml( fname, subdir='' ):
@@ -78,6 +83,14 @@ def zipfile_insert( zipfileobj, filename, data):
     info.compress_type = zipfile.ZIP_DEFLATED
     zipfileobj.writestr(info, data)
 
+
+class MySheetNameError(Exception):
+    """Custom exception handler for duplicate sheet names"""
+    def __init__(self, msg):
+        self.msg = msg
+    def __str__(self):
+        return repr(self.msg)
+
 class SpreadSheet(object):
     """Creates OpenDocument Spreadsheets with charts for Microsoft Excel and OpenOffice
     """
@@ -86,8 +99,8 @@ class SpreadSheet(object):
         """Inits SpreadSheet with filename and blank content."""
         
         self.filename = None
-        self.sheet_objL = [] # list of sheet objects
-        self.chart_objL = [] # list of chart objects
+        self.data_table_objD = {} # dict of data desc objects (DataTableDesc)
+        self.plot_table_objD = {} # dict of plot desc objects (PlotTableDesc)
         
         self.content_xml_obj = load_template_xml( 'content.xml' )
         self.meta_xml_obj = load_template_xml( 'meta.xml' )
@@ -96,14 +109,27 @@ class SpreadSheet(object):
 
         self.metainf_manifest_xml_obj = load_template_xml( 'manifest.xml', subdir='META-INF')
         
+        self.template_ObjectN_content_xml_obj = load_template_xml( 'content.xml', subdir='Object_N')
+        self.template_ObjectN_styles_xml_obj = load_template_xml( 'styles.xml', subdir='Object_N')
+        
         # Clean up template for content (remove default table and graph)
         self.content_root = self.content_xml_obj.getroot()
+        self.meta_xml_root = self.meta_xml_obj.getroot()
         
-        tableL = self.content_root.findall('office:body/office:spreadsheet/table:table', self.content_root.nsmap)
-        self.sheet_objL.extend( tableL )
-        self.table_insert_point = 1  # just after "table:calculation-settings" Element
-        
+        #tableL = self.content_root.findall('office:body/office:spreadsheet/table:table', self.content_root.nsmap)
+                
         self.spreadsheet_obj = self.content_root.find('office:body/office:spreadsheet', self.content_root.nsmap)
+        
+        self.meta_creation_date_obj = self.meta_xml_root.find('office:meta/meta:creation-date', self.meta_xml_root.nsmap)
+        self.meta_dc_date_obj = self.meta_xml_root.find('office:meta/dc:date', self.meta_xml_root.nsmap)
+        
+        
+        # Remove the empty sheets from the template spreadsheet
+        tableL = self.spreadsheet_obj.findall('table:table', self.content_root.nsmap)
+        for table in tableL:
+            table.getparent().remove(table)
+            #print( table.get('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}name') )
+        
         #table2 = tableL[1]
         
         #table1 = tableL[0]
@@ -112,8 +138,51 @@ class SpreadSheet(object):
         #print( table2.items() )
         
 
-    def add_sheet(self, sheetname, list_of_rows):
-        """Create a new sheet in the spreadsheet with "sheetname" as its name.
+    def meta_time(self):
+        "Return time string in meta data format"
+        t = time.localtime()
+        stamp = "%04d-%02d-%02dT%02d:%02d:%02d" % (t[0], t[1], t[2], t[3], t[4], t[5])
+        return stamp
+
+    def NS(self, shortname ): 
+        """remove namespace shortcuts from name"""
+        sL = shortname.split(':')
+        if len(sL)!=2:
+            return shortname
+            
+        return '{%s}'%self.content_root.nsmap[sL[0]] + sL[1]
+
+    def add_scatter(self, plot_sheetname, data_sheetname, 
+                      title='', xlabel='', ylabel='', y2label='',
+                      ycolL=None, ycol2L=None,
+                      labelL=None, label2L=None):
+        """Add a scatter plot to the spread sheet.
+        
+           Use data from "data_sheetname" to create "plot_sheetname" with scatter plot.
+           
+        """
+        
+        if (plot_sheetname in self.data_table_objD) or (plot_sheetname in self.plot_table_objD):
+            raise  MySheetNameError('Duplicate sheet name submitted for new plot: "%s"'%plot_sheetname)
+
+        if (data_sheetname not in self.data_table_objD):
+            raise  MySheetNameError('Data sheet for "%s" plot missing: "%s"'%(plot_sheetname, data_sheetname))
+
+        NS = self.NS # shorten the following lines a bit with a local function name
+        
+        num_chart = len(self.plot_table_objD) + 1
+        add_ObjectN( num_chart, self.metainf_manifest_xml_obj)
+        
+        plot_desc = PlotTableDesc( plot_sheetname, num_chart, NS, self.content_root.nsmap)
+        self.spreadsheet_obj.insert(TABLE_INSERT_POINT, plot_desc.table_obj)
+        
+        #obj_name = 'Object %i'%num_chart
+        
+        # ================= TODO... correct this ====================
+        self.plot_table_objD[plot_sheetname] = None
+
+    def add_sheet(self, data_sheetname, list_of_rows):
+        """Create a new sheet in the spreadsheet with "data_sheetname" as its name.
            
            the list_of_rows will be placed at "A1" and should be: 
             - row 1 is labels
@@ -127,71 +196,16 @@ class SpreadSheet(object):
             [0, 14.7, 518.7], [5000, 12.23, 500.8], 
             [10000, 10.11, 483.0], [60000, 1.04, 390]]
         """
-        def fix_ns( shortname ): 
-            """remove namespace shortcuts from name"""
-            sL = shortname.split(':')
-            if len(sL)!=2:
-                return shortname
+        if (data_sheetname in self.data_table_objD) or (data_sheetname in self.plot_table_objD):
+            raise  MySheetNameError('Duplicate sheet name submitted for new datasheet: "%s"'%data_sheetname)
                 
-            return '{%s}'%self.content_root.nsmap[sL[0]] + sL[1]
+        NS = self.NS # shorten the following lines a bit with a local function name
                 
-        #print( self.content_root.nsmap )
-        attribD = {fix_ns('table:name'):sheetname, fix_ns('table:style-name'):"ta1"}
-        newsheet = ET.Element(fix_ns('table:table'), attrib=attribD, nsmap=self.content_root.nsmap)
+        table_desc = DataTableDesc( data_sheetname, list_of_rows, NS, self.content_root.nsmap)
+        self.spreadsheet_obj.insert(TABLE_INSERT_POINT, table_desc.table_obj)
         
-        colD = {fix_ns('table:style-name'):"co1", fix_ns('table:number-columns-repeated'):"16384", 
-                fix_ns('table:default-cell-style-name'):"ce1"}
-        col_elm = ET.Element(fix_ns('table:table-column'), attrib=colD, nsmap=self.content_root.nsmap)
-        newsheet.append( col_elm )
+        self.data_table_objD[data_sheetname] = table_desc
         
-        str_cellD = {fix_ns('office:value-type'):"string", fix_ns('table:style-name'):"ce1"}
-        float_cellD = {fix_ns('office:value-type'):"float", fix_ns('table:style-name'):"ce1"}
-            
-        row_rep = 1048576 # max number of rows
-            
-        for row in list_of_rows:
-            row_obj = ET.Element(fix_ns('table:table-row'), 
-                                 attrib={fix_ns('table:style-name'):"ro1"}, 
-                                 nsmap=self.content_root.nsmap)
-                
-            col_rep = 16384 # max number of columns
-                
-            for value in row:
-                try:
-                    fval = float( value )
-                    float_cellD[fix_ns('office:value')] = str(fval)
-                    D = float_cellD
-                    text_p = "%g"%fval
-                except:
-                    D = str_cellD
-                    text_p = "%s"%value
-                
-                cell_obj = ET.Element(fix_ns('table:table-cell'), attrib=D, nsmap=self.content_root.nsmap)
-                text_obj = ET.Element(fix_ns('text:p'),  nsmap=self.content_root.nsmap)
-                text_obj.text = text_p
-                cell_obj.append( text_obj )
-                row_obj.append(cell_obj)
-                col_rep -= 1 # decrement max available columns remaining
-
-            last_cell_obj = ET.Element(fix_ns('table:table-cell'), 
-                                       attrib={fix_ns('table:number-columns-repeated'):"%i"%col_rep}, 
-                                       nsmap=self.content_root.nsmap)
-            row_obj.append(last_cell_obj)
-            newsheet.append( row_obj )
-            row_rep -= 1 # decrement max remaining number of rows
-            
-        last_row_obj = ET.Element(fix_ns('table:table-row'), 
-                             attrib={fix_ns('table:style-name'):"ro1", 
-                                     fix_ns('table:number-rows-repeated'):"%i"%row_rep}, 
-                             nsmap=self.content_root.nsmap)
-        last_row_obj.append( ET.Element(fix_ns('table:table-cell'), 
-                                        attrib={fix_ns('table:number-columns-repeated'):"16384"}, 
-                                        nsmap=self.content_root.nsmap) )
-
-        newsheet.append( last_row_obj )
-        self.sheet_objL.append( newsheet )
-        self.spreadsheet_obj.insert(self.table_insert_point, newsheet)
-        self.table_insert_point += 1
             
 
     def save(self, filename='my_chart.ods', debug=False):
@@ -205,6 +219,9 @@ class SpreadSheet(object):
         
         zipfileobj = zipfile.ZipFile(filename, "w")
         
+        self.meta_creation_date_obj.text = self.meta_time()
+        self.meta_dc_date_obj.text = self.meta_time()
+        
         zipfile_insert( zipfileobj, 'meta.xml', 
                         ET.tostring(self.meta_xml_obj, xml_declaration=True, 
                                     encoding="UTF-8", standalone=True))
@@ -212,6 +229,14 @@ class SpreadSheet(object):
         zipfile_insert( zipfileobj, 'META-INF/manifest.xml', 
                         ET.tostring(self.metainf_manifest_xml_obj, xml_declaration=True, 
                                     encoding="UTF-8", standalone=True))
+                                    
+        for N in range( len(self.plot_table_objD) ):
+            zipfile_insert( zipfileobj, 'Object %i/content.xml'%(N+1,), 
+                            ET.tostring(self.template_ObjectN_content_xml_obj,  encoding="UTF-8"))
+            zipfile_insert( zipfileobj, 'Object %i/styles.xml'%(N+1,), 
+                            ET.tostring(self.template_ObjectN_styles_xml_obj, encoding="UTF-8"))
+                                        
+                                    
         zipfile_insert( zipfileobj, 'content.xml', 
                         ET.tostring(self.content_xml_obj, xml_declaration=True, 
                                     encoding="UTF-8", standalone=True))
