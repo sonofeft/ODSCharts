@@ -30,12 +30,12 @@ def add_ObjectN( N, metainf_manifest_xml_obj):
     M.insert(N ,mfe) # place in order
     
     # put xml files into subdirectory
-    attribD = {NS('manifest:full-path', nsmap):obj_name+'/styles.xml', 
+    attribD = {NS('manifest:full-path', nsmap):obj_name+'/content.xml', 
                NS('manifest:media-type', nsmap):"text/xml"}
     mfe = ET.Element(NS('manifest:file-entry', nsmap), attrib=attribD, nsmap=nsmap)
     M.insert(N*3 ,mfe) # place in order
     
-    attribD = {NS('manifest:full-path', nsmap):obj_name+'/content.xml', 
+    attribD = {NS('manifest:full-path', nsmap):obj_name+'/styles.xml', 
                NS('manifest:media-type', nsmap):"text/xml"}
     mfe = ET.Element(NS('manifest:file-entry', nsmap), attrib=attribD, nsmap=nsmap)
     M.insert(N*3 ,mfe) # place in order

@@ -58,13 +58,20 @@ class MyTest(unittest.TestCase):
 
     def test_save(self):
         """Check that save operates cleanly"""
-        list_of_rows = [['Altitude','Pressure','Temperature'], 
-                        ['feet','psia','degR'], 
-                        [0, 14.7, 518.7], [5000, 12.23, 500.8], 
-                        [10000, 10.11, 483.0], [60000, 1.04, 390]]
+        list_of_rows = [['Altitude','Pressure','Temperature','Temperature'], 
+                        ['feet','psia','degR','degK'], 
+                        [0, 14.7, 518.7, 288.1667], [5000, 12.23, 500.8, 278.2222], 
+                        [10000, 10.11, 483.0, 268.3333], [30000, 4.36, 411.8, 228.7778],
+                        [60000, 1.04, 390, 216.6667]]
         
         self.myclass.add_sheet('Alt_Data', list_of_rows)
-        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data')
+        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+                                  title='Unittest Title', xlabel='Unittest X Axis', 
+                                  ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
+                                  xcol=1,
+                                  ycolL=[2,3,4], ycol2L=None,
+                                  labelL=None, label2L=None)
+                                  
         #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')
         #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
         

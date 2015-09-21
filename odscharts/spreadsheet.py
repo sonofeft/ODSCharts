@@ -41,10 +41,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import zipfile
 import os
 import time
+from copy import deepcopy
+
 from lxml import etree as ET
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
+from object_content import build_chart_object_content
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -101,6 +104,8 @@ class SpreadSheet(object):
         self.filename = None
         self.data_table_objD = {} # dict of data desc objects (DataTableDesc)
         self.plot_table_objD = {} # dict of plot desc objects (PlotTableDesc)
+        self.ordered_plotL = [] # list of plot names in insertion order 
+        self.ordered_dataL = [] # list of data sheet names in insertion order
         
         self.content_xml_obj = load_template_xml( 'content.xml' )
         self.meta_xml_obj = load_template_xml( 'meta.xml' )
@@ -154,17 +159,21 @@ class SpreadSheet(object):
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
                       title='', xlabel='', ylabel='', y2label='',
+                      xcol=1,
                       ycolL=None, ycol2L=None,
                       labelL=None, label2L=None):
         """Add a scatter plot to the spread sheet.
         
            Use data from "data_sheetname" to create "plot_sheetname" with scatter plot.
            
+           Assume index into columns is "1-based" such that column "A" is 1, "B" is 2, etc.
+           
         """
-        
+        # Don't allow duplicate sheet names
         if (plot_sheetname in self.data_table_objD) or (plot_sheetname in self.plot_table_objD):
             raise  MySheetNameError('Duplicate sheet name submitted for new plot: "%s"'%plot_sheetname)
 
+        # Data sheet must already exist in order to make a plot
         if (data_sheetname not in self.data_table_objD):
             raise  MySheetNameError('Data sheet for "%s" plot missing: "%s"'%(plot_sheetname, data_sheetname))
 
@@ -178,8 +187,29 @@ class SpreadSheet(object):
         
         #obj_name = 'Object %i'%num_chart
         
-        # ================= TODO... correct this ====================
-        self.plot_table_objD[plot_sheetname] = None
+        # ================= save PlotTableDesc object
+        self.plot_table_objD[plot_sheetname] = plot_desc
+        self.ordered_plotL.append( plot_sheetname )
+        
+        # Start making the chart object that goes onto the plot sheet 
+        #  Assign plot parameters to PlotTableDesc object
+        plot_desc.plot_sheetname = plot_sheetname
+        plot_desc.data_sheetname = data_sheetname
+        plot_desc.title = title
+        plot_desc.xlabel = xlabel
+        plot_desc.ylabel = ylabel
+        plot_desc.y2label = y2label
+        plot_desc.xcol = xcol
+        plot_desc.ycolL = ycolL
+        plot_desc.ycol2L = ycol2L
+        plot_desc.labelL = labelL
+        plot_desc.label2L = label2L
+        
+        # assigns attribute chart_obj to plot_desc
+        table_desc = self.data_table_objD[data_sheetname]
+        build_chart_object_content( deepcopy(self.template_ObjectN_content_xml_obj), 
+                                    plot_desc, table_desc )
+        
 
     def add_sheet(self, data_sheetname, list_of_rows):
         """Create a new sheet in the spreadsheet with "data_sheetname" as its name.
@@ -205,7 +235,7 @@ class SpreadSheet(object):
         self.spreadsheet_obj.insert(TABLE_INSERT_POINT, table_desc.table_obj)
         
         self.data_table_objD[data_sheetname] = table_desc
-        
+        self.ordered_dataL.append( table_desc )
             
 
     def save(self, filename='my_chart.ods', debug=False):
@@ -230,11 +260,14 @@ class SpreadSheet(object):
                         ET.tostring(self.metainf_manifest_xml_obj, xml_declaration=True, 
                                     encoding="UTF-8", standalone=True))
                                     
-        for N in range( len(self.plot_table_objD) ):
-            zipfile_insert( zipfileobj, 'Object %i/content.xml'%(N+1,), 
-                            ET.tostring(self.template_ObjectN_content_xml_obj,  encoding="UTF-8"))
+        for N, plot_sheetname in enumerate( self.ordered_plotL ):
+            
+            plot_desc = self.plot_table_objD[ plot_sheetname ]
+            
             zipfile_insert( zipfileobj, 'Object %i/styles.xml'%(N+1,), 
                             ET.tostring(self.template_ObjectN_styles_xml_obj, encoding="UTF-8"))
+            zipfile_insert( zipfileobj, 'Object %i/content.xml'%(N+1,), 
+                            ET.tostring(plot_desc.chart_obj,  encoding="UTF-8"))
                                         
                                     
         zipfile_insert( zipfileobj, 'content.xml', 

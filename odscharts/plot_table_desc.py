@@ -29,8 +29,6 @@ class PlotTableDesc(object):
         for prefix, uri in nsmap.items():
             ET.register_namespace(prefix, uri)
         
-        self.plot_sheetname = plot_sheetname
-
         # Start building new lxml Element to be new Sheet in spreadsheet
         attribD = {NS('table:name'):plot_sheetname}
         newsheet = ET.Element(NS('table:table'), attrib=attribD, nsmap=nsmap)
