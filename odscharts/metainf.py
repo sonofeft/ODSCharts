@@ -2,7 +2,12 @@
 Make changes to META-INF data and Object 1-N subdirectories
 """
 
-import ElementTree_OD as ET
+import sys
+if sys.version_info < (3,):
+    import ElementTree_27OD as ET
+else:
+    import ElementTree_34OD as ET
+
 
 
 def add_ObjectN( N, metainf_manifest_xml_obj):

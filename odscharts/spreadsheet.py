@@ -43,7 +43,12 @@ import os
 import time
 from copy import deepcopy
 
-import ElementTree_OD as ET
+import sys
+if sys.version_info < (3,):
+    import ElementTree_27OD as ET
+else:
+    import ElementTree_34OD as ET
+
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN

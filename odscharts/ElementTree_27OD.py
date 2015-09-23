@@ -102,16 +102,6 @@ import re
 import warnings
 from collections import OrderedDict
 
-# get StringIO for either python 2.x or 3.x
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-# look for <? blah blah blah ?> in xml file
-header_re = re.compile( '\<\?.*\?\>', re.MULTILINE )
-
-    
 class _SimpleElementPath(object):
     # emulate pre-1.2 find/findtext/findall behaviour
     def find(self, element, tag, namespaces=None):
@@ -843,7 +833,7 @@ def _namespaces(elem, encoding, default_namespace=None):
     # identify namespaces used in this tree
 
     # maps qnames to *encoded* prefix:local names
-    qnames = OrderedDict({None: None})
+    qnames = {None: None}
 
     # maps uri:s to prefixes
     namespaces = OrderedDict()
@@ -933,7 +923,7 @@ def _serialize_xml(write, elem, encoding, qnames, namespaces):
                             k.encode(encoding),
                             _escape_attrib(v, encoding)
                             ))
-                for k, v in items:
+                for k, v in items:  # lexical order
                     if isinstance(k, QName):
                         k = k.text
                     if isinstance(v, QName):

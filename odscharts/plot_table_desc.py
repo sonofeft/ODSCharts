@@ -2,8 +2,13 @@
 A PlotTableDesc object holds the XML logic as well as all info about a 
 scatter plot table
 """
+import sys
+if sys.version_info < (3,):
+    import ElementTree_27OD as ET
+else:
+    import ElementTree_34OD as ET
 
-import ElementTree_OD as ET
+
 
 class PlotTableDesc(object):
     """Holds a description of a scatter plot sheet.
@@ -27,7 +32,7 @@ class PlotTableDesc(object):
         newsheet = ET.Element(NS('table:table'), attrib=attribD)
 
         table_shapes  = ET.Element(NS('table:shapes'))
-        print 'table_shapes.text =',table_shapes.text
+        print( 'table_shapes.text =',table_shapes.text )
         
         def NS_attrib( attD ):
             D = {}
@@ -78,7 +83,7 @@ class PlotTableDesc(object):
         
         for parent in newsheet.iter():
             add_tags( parent )
-            for child in parent._children:
+            for child in parent.getchildren():
                 add_tags( child )
                 
                 

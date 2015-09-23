@@ -1,11 +1,23 @@
 import sys
 from collections import OrderedDict
-import ElementTree_OD as ET
-from cStringIO import StringIO
+import io
+
+if sys.version_info < (3,):
+    import ElementTree_27OD as ET
+else:
+    import ElementTree_34OD as ET
+
+
+# get StringIO for either python 2.x or 3.x
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 import re
 from copy import deepcopy
 
-header_re = re.compile( '\<\?.*\?\>', re.MULTILINE )
+header_re = re.compile( '\<\?.*\?\>', flags=re.MULTILINE | re.UNICODE )
 
 class TemplateXML_File(object):
     
@@ -13,7 +25,7 @@ class TemplateXML_File(object):
         
         self.xml_file_name = xml_file_name
         
-        fInp = open(xml_file_name, 'rb')
+        fInp = io.open(xml_file_name, 'rt', encoding='utf-8')
         xml_src = fInp.read()
         fInp.close()
 
@@ -37,6 +49,8 @@ class TemplateXML_File(object):
 
         for event, elem in context:
             if event=="start":
+                #print('type elem.tag =', type(elem.tag))
+                #print('     type("}") =',type("}"))
                 sL = elem.tag.split('}')
                 if len(sL) == 2:
                     name = sL[1]
@@ -60,8 +74,11 @@ class TemplateXML_File(object):
         self.parentD = {} # index=child Element object, value=parent Element object
         # After building tree, create self.parentD for all Elements
         for parent in self.root.iter():
-            for child in parent._children:
-                self.parentD[child] = parent
+            try:
+                for child in parent.getchildren():
+                    self.parentD[child] = parent
+            except:
+                print( 'NOTICE: No children for:', parent )
 
     def getroot(self):
         return self.root
@@ -91,12 +108,18 @@ class TemplateXML_File(object):
 
         dummy_file = dummy()
         dummy_file.write = xml_dataL.append
-        ET._serialize_xml(dummy_file.write, self.root, "utf-8", self.qnameOD, self.nsOD)
+
+        if sys.version_info < (3,):
+            ET._serialize_xml(dummy_file.write, self.root, "utf-8", self.qnameOD, self.nsOD)
+        else:
+            short_empty_elements = True # use short format for empty elements
+            ET._serialize_xml(dummy_file.write, self.root, self.qnameOD, self.nsOD, short_empty_elements)
         
         return "".join(xml_dataL)
         
     def write(self, out_file_name):
-        fOut = open(out_file_name, "wb")
+        #fOut = open(out_file_name, "w")
+        fOut = io.open(out_file_name, 'wt', encoding='utf-8')
         fOut.write( self.tostring() )
         fOut.close()
         
@@ -146,7 +169,7 @@ class TemplateXML_File(object):
         """
         
         tag = self.NS( name )
-        print 'tag =',tag
+        #print( 'tag =',tag )
         
         if attribOD:
             OD = self.NS_attrib( attribOD )
@@ -161,23 +184,23 @@ if __name__ == "__main__":
     #TFile.write( r'D:\temp\open_office\content_v11.xml' )
     
     ss = TFile.find( 'office:body/office:spreadsheet' )
-    print 'ss =', ss
-    print 'ss.tag =', ss.tag
-    print
+    print( 'ss =', ss )
+    print( 'ss.tag =', ss.tag )
+    print()
     
     ss2 = TFile.find('{urn:oasis:names:tc:opendocument:xmlns:office:1.0}spreadsheet')
-    print 'ss2 =',ss2,'  (Should be None since can NOT search on tag)'
+    print( 'ss2 =',ss2,'  (Should be None since can NOT search on tag)' )
     
-    #print TFile.findall( 'table:table', elem_obj=ss )
+    #print( TFile.findall( 'table:table', elem_obj=ss ) )
     print
-    #print TFile.qnameOD.items()[:2]
+    #print( TFile.qnameOD.items()[:2] )
     
     newtab1 = TFile.new_elem( '{urn:oasis:names:tc:opendocument:xmlns:table:1.0}table', attribOD=None)
     newtab2 = TFile.new_elem( 'table:table', attribOD=None)
     
-    print 'newtab1 =',newtab1
-    print 'newtab2 =',newtab2
+    print( 'newtab1 =',newtab1 )
+    print( 'newtab2 =',newtab2 )
     
     newtab3 = TFile.new_elem( 'table:table', attribOD={'table:name':'Sheet1'})
-    print 'newtab3 =',newtab3
-    print 'newtab3 =',newtab3.items()
+    print( 'newtab3 =',newtab3 )
+    print( 'newtab3 =',newtab3.items() )

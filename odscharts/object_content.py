@@ -4,7 +4,12 @@ for a new chart
 """
 from copy import deepcopy
 
-import ElementTree_OD as ET
+import sys
+if sys.version_info < (3,):
+    import ElementTree_27OD as ET
+else:
+    import ElementTree_34OD as ET
+
 
 def get_col_letters_from_number(num):
     letters = ''

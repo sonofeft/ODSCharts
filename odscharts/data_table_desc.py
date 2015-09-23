@@ -2,7 +2,12 @@
 A DataTableDesc object holds the XML logic as well as all info about a data table
 """
 
-import ElementTree_OD as ET
+import sys
+if sys.version_info < (3,):
+    import ElementTree_27OD as ET
+else:
+    import ElementTree_34OD as ET
+
 
 
 class DataTableDesc(object):
@@ -122,7 +127,7 @@ class DataTableDesc(object):
         
         for parent in newsheet.iter():
             add_tags( parent )
-            for child in parent._children:
+            for child in parent.getchildren():
                 add_tags( child )
                 
                 
