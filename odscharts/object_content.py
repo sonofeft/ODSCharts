@@ -4,7 +4,7 @@ for a new chart
 """
 from copy import deepcopy
 
-from lxml import etree as ET
+import ElementTree_OD as ET
 
 def get_col_letters_from_number(num):
     letters = ''
@@ -18,23 +18,21 @@ def get_col_letters_from_number(num):
 def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     """When chart_obj is input, it still holds values from the original template"""
     
-    root = chart_obj.getroot()
-    
 
     def node_print( n ):
         for ch in n:
             print( ch)
         print( '='*55)
 
-    chart = root.find('office:body/office:chart/chart:chart', root.nsmap)
+    chart = chart_obj.find('office:body/office:chart/chart:chart')
 
-    title = chart.find('chart:title/text:p', root.nsmap)
+    title = chart.find('chart:title/text:p', chart_obj.rev_nsOD)
     #print( title.text)
     title.text = plot_desc.title
 
-    plot_area = chart.find('chart:plot-area', root.nsmap)
+    plot_area = chart.find('chart:plot-area', chart_obj.rev_nsOD)
 
-    axisL = plot_area.findall('chart:axis', root.nsmap)
+    axisL = plot_area.findall('chart:axis', chart_obj.rev_nsOD)
     xaxis = None
     yaxis = None
     for axis in axisL:
@@ -44,13 +42,13 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         if dim_name == 'y':
             yaxis = axis
 
-    xtitle = xaxis.find('chart:title/text:p', root.nsmap)
-    ytitle = yaxis.find('chart:title/text:p', root.nsmap)
+    xtitle = xaxis.find('chart:title/text:p', chart_obj.rev_nsOD)
+    ytitle = yaxis.find('chart:title/text:p', chart_obj.rev_nsOD)
     xtitle.text = plot_desc.xlabel
     ytitle.text = plot_desc.ylabel
     
     
-    chart_series = plot_area.find('chart:series', root.nsmap)
+    chart_series = plot_area.find('chart:series', chart_obj.rev_nsOD)
     node_print( chart_series )
 
     series_label_cell_address = chart_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
@@ -68,8 +66,8 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
     chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
 
-    chart_domain = chart_series.find('chart:domain', root.nsmap)
-    chart_data_point = chart_series.find('chart:data-point', root.nsmap)
+    chart_domain = chart_series.find('chart:domain', chart_obj.rev_nsOD)
+    chart_data_point = chart_series.find('chart:data-point', chart_obj.rev_nsOD)
     #print( chart_domain.items())
     #print( chart_data_point.items())
 
@@ -81,8 +79,8 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     chart_data_point.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}repeated','%i'%(table_desc.nrows-2,))
     
     if len(plot_desc.ycolL) > 1:
-        auto_styles = root.find('office:automatic-styles', root.nsmap)
-        autostyleL = auto_styles.findall('style:style', root.nsmap)
+        auto_styles = chart_obj.find('office:automatic-styles')
+        autostyleL = auto_styles.findall('style:style', chart_obj.rev_nsOD)
         ref_series_style = None
         
         istyle_loc = 0

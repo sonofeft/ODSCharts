@@ -3,37 +3,31 @@ A PlotTableDesc object holds the XML logic as well as all info about a
 scatter plot table
 """
 
-from lxml import etree as ET
+import ElementTree_OD as ET
 
 class PlotTableDesc(object):
     """Holds a description of a scatter plot sheet.
     """
 
-    def __init__(self, plot_sheetname, num_chart, NS, nsmap):
+    def __init__(self, plot_sheetname, num_chart, parent_obj):
         """Inits SpreadSheet with filename and blank content.
         
-        NS: cleans up the namespace callouts of the lxml Element
-        nsmap: dictionary containing documents namespace definitions
+        NS: cleans up the namespace callouts of the xml Element
         
         Attributes::
         
             plot_sheetname: name of data sheet
         
         """
-        try:
-            register_namespace = ET.register_namespace
-        except AttributeError:
-            def register_namespace(prefix, uri):
-                ET._namespace_map[uri] = prefix
         
-        for prefix, uri in nsmap.items():
-            ET.register_namespace(prefix, uri)
+        NS = parent_obj.NS
         
-        # Start building new lxml Element to be new Sheet in spreadsheet
+        # Start building new xml Element to be new Sheet in spreadsheet
         attribD = {NS('table:name'):plot_sheetname}
-        newsheet = ET.Element(NS('table:table'), attrib=attribD, nsmap=nsmap)
+        newsheet = ET.Element(NS('table:table'), attrib=attribD)
 
-        table_shapes  = ET.Element(NS('table:shapes'), nsmap=nsmap)
+        table_shapes  = ET.Element(NS('table:shapes'))
+        print 'table_shapes.text =',table_shapes.text
         
         def NS_attrib( attD ):
             D = {}
@@ -44,13 +38,13 @@ class PlotTableDesc(object):
         attribD = NS_attrib({ 'draw:z-index':"1", 'draw:id':"id0", 'draw:style-name':"a0", 'draw:name':"Chart 1", 'svg:x':"0in",
                      'svg:y':"0in", 'svg:width':"9.47551in", 'svg:height':"6.88048in", 'style:rel-width':"scale",
                      'style:rel-height':"scale"})
-        draw_frame = ET.Element(NS('draw:frame'), attrib=attribD, nsmap=nsmap)
+        draw_frame = ET.Element(NS('draw:frame'), attrib=attribD)
 
         attribD = NS_attrib({'xlink:href':"Object %i/"%num_chart, 'xlink:type':"simple", 'xlink:show':"embed", 'xlink:actuate':"onLoad"})
-        draw_obj = ET.Element(NS('draw:object'), attrib=attribD, nsmap=nsmap)
+        draw_obj = ET.Element(NS('draw:object'), attrib=attribD)
         
-        svg_title  = ET.Element(NS('svg:title'), nsmap=nsmap)
-        svg_desc  = ET.Element(NS('svg:desc'), nsmap=nsmap)
+        svg_title  = ET.Element(NS('svg:title'))
+        svg_desc  = ET.Element(NS('svg:desc'))
         
         draw_frame.append( draw_obj )
         draw_frame.append( svg_title )
@@ -58,15 +52,34 @@ class PlotTableDesc(object):
         table_shapes.append( draw_frame )
         
         
-        tab_col = ET.Element(NS('table:table-column'), attrib={NS('table:number-columns-repeated'):"16384"}, nsmap=nsmap)
-        tab_row = ET.Element(NS('table:table-row'), attrib={NS('table:number-rows-repeated'):"1048576"}, nsmap=nsmap)
-        tab_cell = ET.Element(NS('table:table-cell'), attrib={NS('table:number-columns-repeated'):"16384"}, nsmap=nsmap)
+        tab_col = ET.Element(NS('table:table-column'), attrib={NS('table:number-columns-repeated'):"16384"})
+        tab_row = ET.Element(NS('table:table-row'), attrib={NS('table:number-rows-repeated'):"1048576"})
+        tab_cell = ET.Element(NS('table:table-cell'), attrib={NS('table:number-columns-repeated'):"16384"})
         tab_row.append( tab_cell )
         
         
         newsheet.append( table_shapes )
         newsheet.append( tab_col )
         newsheet.append( tab_row )
+
+        # make sure any added Element objects are in nsOD, rev_nsOD and qnameOD of parent_obj
+        def add_tag( tag ):
+            sL = tag.split('}')
+            uri = sL[0][1:]
+            name = sL[1]
+            parent_obj.qnameOD[tag] = parent_obj.nsOD[uri] + ':' + name
+            
+        def add_tags( obj ):
+            if hasattr(obj,'tag'):
+                add_tag( obj.tag )
+            if hasattr(obj, 'attrib'):
+                for q,v in obj.attrib.items():
+                    add_tag( q )
         
+        for parent in newsheet.iter():
+            add_tags( parent )
+            for child in parent._children:
+                add_tags( child )
+                
                 
         self.table_obj = newsheet
