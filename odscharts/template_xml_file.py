@@ -21,13 +21,24 @@ header_re = re.compile( '\<\?.*\?\>', flags=re.MULTILINE | re.UNICODE )
 
 class TemplateXML_File(object):
     
-    def __init__(self, xml_file_name):
+    def __init__(self, xml_file_name_or_src):
+        """
+        Read and parse xml file using modified version of standard python 
+        xml.etree.ElementTree.
         
-        self.xml_file_name = xml_file_name
+        xml_file_name_or_src can be a file name like: "content.xml" OR 
+        can be xml source.
+        """
         
-        fInp = io.open(xml_file_name, 'rt', encoding='utf-8')
-        xml_src = fInp.read()
-        fInp.close()
+        if xml_file_name_or_src.endswith('.xml') and len(xml_file_name_or_src)<256:
+            self.xml_file_name_or_src = xml_file_name_or_src
+            
+            fInp = io.open(xml_file_name_or_src, 'rt', encoding='utf-8')
+            xml_src = fInp.read()
+            fInp.close()
+        else:
+            self.xml_file_name_or_src = None
+            xml_src = xml_file_name_or_src
 
         self.xml_header = '' # Assume no header unless found at head of file
         match = header_re.match(xml_src)
@@ -72,13 +83,46 @@ class TemplateXML_File(object):
         self.root = context.root
         
         self.parentD = {} # index=child Element object, value=parent Element object
+        self.depthD = {}  # index=Element object, value = depth in xml tree
+        self.max_depth = 0
+        self.short_pathD = {} # index=Element, value = short name (like: "ns0:name1/ns1:xyz/ns3:abc")
         # After building tree, create self.parentD for all Elements
+        self.parentD[self.root] = None
+        self.depthD[self.root] = 0
+        self.short_pathD[self.root] = self.qnameOD[ self.root.tag ] # no calc req'd... just = qname
+        
+        temp_short_path_counterD = {} # just used here to help count occurances of short path
+        self.short_path_counterD = {} # index=Element, value=short path counter value
+        self.short_path_parent_counterD = {} #  index=Element, value=parent's short path counter value
+        self.short_path_counterD[self.root] = 1 # 1st (and only) occurance
+        self.short_path_parent_counterD[self.root] = 1 # 1st (and only) occurance
+        
         for parent in self.root.iter():
             try:
                 for child in parent.getchildren():
                     self.parentD[child] = parent
+                    self.depthD[child] = self.depthD[parent] + 1
+                    self.max_depth = max(self.max_depth, self.depthD[child])
+                    
+                    short_path = self.get_short_path( child )
+                    self.short_pathD[child] = short_path
+                    
+                    temp_short_path_counterD[(parent,short_path)] = temp_short_path_counterD.get((parent,short_path), 0) + 1
+                    self.short_path_counterD[child] = '%s,%s'%(self.short_path_counterD[parent], 
+                                                       temp_short_path_counterD[(parent,short_path)])
+                    self.short_path_parent_counterD[child] = '%s'%self.short_path_counterD[parent]
+                    
             except:
                 print( 'NOTICE: No children for:', parent )
+
+    def get_short_path(self, elem):
+        
+        sL = [ self.qnameOD[ elem.tag ] ]
+        while self.parentD[elem] is not None:
+            elem = self.parentD[elem]
+            sL.append( self.qnameOD[ elem.tag ] )
+        sL.reverse()
+        return "/".join(sL)
 
     def getroot(self):
         return self.root
