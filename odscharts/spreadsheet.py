@@ -80,7 +80,7 @@ def load_template_xml_from_ods(ods_fname, fname, subdir='' ):
         inner_fname =  fname
     
     odsfile = zipfile.ZipFile( full_ods_path )
-    src = odsfile.read( inner_fname )
+    src = odsfile.read( inner_fname ).decode('utf-8')
     
     return TemplateXML_File( src )
 

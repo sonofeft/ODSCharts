@@ -396,7 +396,11 @@ class SetRep( TemplateXML_File ):
         # 2) Modify Elements in partial_match_elemLL
         
         for n in range(self.max_depth +1): # iterate over depth values
-            print 'Modify self at depth =',n
+            if self.partial_match_elemLL[n]:
+                print len(self.partial_match_elemLL[n]),'Modifications self at depth =',n
+            else:
+                print 'No Modifications of self at depth =',n
+                
             for elem, e2 in self.partial_match_elemLL[n]:
                 commandL.extend( self.get_attrib_assignment_commands(elem, e2) )
                 
@@ -405,7 +409,11 @@ class SetRep( TemplateXML_File ):
         self.e2_object_nameD = {} # index=e2, value=name used for create command
         
         for n in range(self.max_depth +1): # iterate over depth values
-            print 'Copy e2 at depth =',n
+            if self.unmatched_elemLL2[n]:
+                print len(self.unmatched_elemLL2[n]),'Copies of e2 at depth =',n
+            else:
+                print 'No Copying of e2 at depth =',n
+                
             for e2 in self.unmatched_elemLL2[n]:
                 commandL.extend( self.get_e2_copy_commands(e2) )
         
@@ -496,10 +504,11 @@ if __name__ == "__main__":
     print  '+'*55
     
     srA.find_changes_to_make_equal( srB )
+    
     srA.create_ET_commands_to_make_equal()
     
     
-    sys.exit()
+    #sys.exit()
     print '#'*75
     print ' '*10,'Following is Results from "find_diff" method.'
     print '#'*75
