@@ -70,12 +70,19 @@ __status__ = "3 - Alpha" # "3 - Alpha", "4 - Beta", "5 - Production/Stable"
 TABLE_INSERT_POINT = 1  # just after "table:calculation-settings" Element
 
 
-def load_template_xml( fname, subdir='' ):
+def load_template_xml_from_ods(ods_fname, fname, subdir='' ):
+    
+    full_ods_path = os.path.join( here, 'templates', ods_fname )
+    
     if subdir:
-        full_path = os.path.join( here, 'templates', subdir, fname )
+        inner_fname = subdir + '/' + fname
     else:
-        full_path = os.path.join( here, 'templates', fname )
-    return TemplateXML_File( full_path )
+        inner_fname =  fname
+    
+    odsfile = zipfile.ZipFile( full_ods_path )
+    src = odsfile.read( inner_fname )
+    
+    return TemplateXML_File( src )
 
 
 def zipfile_insert( zipfileobj, filename, data):
@@ -113,14 +120,14 @@ class SpreadSheet(object):
         self.ordered_plotL = [] # list of plot names in insertion order 
         self.ordered_dataL = [] # list of data sheet names in insertion order
         
-        self.content_xml_obj = load_template_xml( 'content.xml' )
-        self.meta_xml_obj = load_template_xml( 'meta.xml' )
+        self.content_xml_obj = load_template_xml_from_ods( 'alt_chart.ods', 'content.xml' )
+        self.meta_xml_obj = load_template_xml_from_ods( 'alt_chart.ods', 'meta.xml' )
         self.mimetype_str = 'application/vnd.oasis.opendocument.spreadsheet'
-        self.styles_xml_obj = load_template_xml( 'styles.xml' )
+        self.styles_xml_obj = load_template_xml_from_ods( 'alt_chart.ods', 'styles.xml' )
 
-        self.metainf_manifest_xml_obj = load_template_xml( 'manifest.xml', subdir='META-INF')
+        self.metainf_manifest_xml_obj = load_template_xml_from_ods('empty_sheets123.ods', 'manifest.xml', subdir='META-INF')
         
-        self.template_ObjectN_styles_xml_obj = load_template_xml( 'styles.xml', subdir='Object_N')
+        self.template_ObjectN_styles_xml_obj = load_template_xml_from_ods( 'alt_chart.ods', 'styles.xml', subdir='Object 1')
         
         # Clean up template for content (remove default table and graph)
         
@@ -129,6 +136,8 @@ class SpreadSheet(object):
         self.meta_creation_date_obj = self.meta_xml_obj.find('office:meta/meta:creation-date')
         self.meta_dc_date_obj = self.meta_xml_obj.find('office:meta/dc:date')
         
+        self.meta_init_creator_obj = self.meta_xml_obj.find('office:meta/meta:initial-creator')
+        self.meta_dc_creator_obj = self.meta_xml_obj.find('office:meta/dc:creator')
         
         # Remove the empty sheets from the template spreadsheet
         tableL = self.content_xml_obj.findall('office:body/office:spreadsheet/table:table')
@@ -206,7 +215,7 @@ class SpreadSheet(object):
         table_desc = self.data_table_objD[data_sheetname]
         
         # create a new chart object
-        chart_obj = load_template_xml( 'content.xml', subdir='Object_N')
+        chart_obj = load_template_xml_from_ods('alt_chart.ods', 'content.xml', subdir='Object 1')
         
         build_chart_object_content( chart_obj, plot_desc, table_desc )
         
@@ -250,6 +259,10 @@ class SpreadSheet(object):
         
         self.meta_creation_date_obj.text = self.meta_time()
         self.meta_dc_date_obj.text = self.meta_time()
+        self.meta_init_creator_obj.text = 'ODSCharts'
+        self.meta_dc_creator_obj.text = 'ODSCharts'
+        
+        
         
         zipfile_insert( zipfileobj, 'meta.xml', self.meta_xml_obj.tostring())
         
