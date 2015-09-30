@@ -50,6 +50,9 @@ class SetRep( TemplateXML_File ):
         can be xml source.        
         """
         
+        if not xml_file_name_or_src.strip():
+            xml_file_name_or_src = '<office:document-styles  xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" ></office:document-styles>'
+        
         TemplateXML_File.__init__(self, xml_file_name_or_src)
         
         self.e_setrepOD = OrderedDict()  # index=Element object, value=set representation
@@ -149,6 +152,9 @@ class SetRep( TemplateXML_File ):
         
         print
         print '='*20,'Not Found 1 = %i'%total_nf1,'='*5,'Not Found 2 = %i'%total_nf2,'='*20
+        
+        total_diff = total_nf1 + total_nf2
+        return total_diff
         
 
     def find_changes_to_make_equal(self, setrep2):
@@ -297,7 +303,7 @@ class SetRep( TemplateXML_File ):
         
         for a in e2.attrib:
             if e2.get(a) != elem.get(a):
-                commandL.append( '    elem.set("%s", "%s"'%(a, e2.get(a)) )
+                commandL.append( '    elem.set("%s", "%s")'%(a, e2.get(a)) )
         
         for a in elem.attrib:
             if a not in e2.attrib:
@@ -321,7 +327,7 @@ class SetRep( TemplateXML_File ):
             e2_name = 'new_elem_%i'%( len(self.e2_object_nameD) + 1 )
             self.e2_object_nameD[e2] = e2_name
             
-            commandL.append( '    %s = ET.SubElement(%s,"%s", attrib="%s")'%(e2_name, parent_name, e2.tag, repr(e2.attrib)) )
+            commandL.append( '    %s = ET.SubElement(%s,"%s", attrib=%s)'%(e2_name, parent_name, e2.tag, repr(e2.attrib)) )
             if e2.text:
                 commandL.append( '    %s.text = "%s")'%(e2_name, e2.text) )
             
@@ -349,7 +355,7 @@ class SetRep( TemplateXML_File ):
             e2_name = 'new_elem_%i'%( len(self.e2_object_nameD) + 1 )
             self.e2_object_nameD[e2] = e2_name
             
-            commandL.append( '    %s = ET.SubElement(parent,"%s", attrib="%s")'%(e2_name, e2.tag, repr(e2.attrib)) )
+            commandL.append( '    %s = ET.SubElement(parent,"%s", attrib=%s)'%(e2_name, e2.tag, repr(e2.attrib)) )
             if e2.text:
                 commandL.append( '    %s.text = "%s")'%(e2_name, e2.text) )
             

@@ -52,7 +52,7 @@ else:
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
-from object_content import build_chart_object_content
+from object_content import build_chart_object_content, get_color
 from template_xml_file import TemplateXML_File
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -165,14 +165,19 @@ class SpreadSheet(object):
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
                       title='', xlabel='', ylabel='', y2label='',
-                      xcol=1,
+                      xcol=1, logx=False, logy=False, log2y=False,
                       ycolL=None, ycol2L=None,
+                      showMarkerL=None, showMarker2L=None,
+                      colorL=None, color2L=None,
                       labelL=None, label2L=None):
         """Add a scatter plot to the spread sheet.
         
            Use data from "data_sheetname" to create "plot_sheetname" with scatter plot.
            
            Assume index into columns is "1-based" such that column "A" is 1, "B" is 2, etc.
+           
+           NOTE: marker color is NOT supported in Excel from ODS format. 
+           Markers will appear, but will be some other default color.
            
         """
         # Don't allow duplicate sheet names
@@ -208,6 +213,40 @@ class SpreadSheet(object):
         plot_desc.xcol = xcol
         plot_desc.ycolL = ycolL
         plot_desc.ycol2L = ycol2L
+        
+        def fill_out_list( yL, valL, default_val=None):
+            if yL is None:
+                pass
+            elif valL is None:
+                valL = [default_val for y in yL]
+            else:
+                while len(valL) < len(yL):
+                    valL.append( valL[-1] )
+            return valL
+            
+        showMarkerL = fill_out_list( ycolL, showMarkerL, True )
+        showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
+        
+        def fill_out_color_list(yL, cL):
+            if type(cL) == type([1,2,3]):
+                while len(cL) < len(yL):
+                    cL.append( get_color( len(cL)) )
+            #elif cL is None:
+            #    cL = [None for i in range(len(yL))]
+            else:
+                cL = [get_color(i) for i in range(len(yL))]
+                #cL = [None for i in range(len(yL))]
+            return cL
+        
+        colorL = fill_out_color_list( ycolL, colorL)
+        color2L = fill_out_color_list( ycolL, color2L)
+        
+        plot_desc.showMarkerL = showMarkerL
+        plot_desc.showMarker2L = showMarker2L
+        
+        plot_desc.colorL = colorL
+        plot_desc.color2L = color2L
+        
         plot_desc.labelL = labelL
         plot_desc.label2L = label2L
         

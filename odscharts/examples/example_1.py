@@ -6,6 +6,7 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+sys.path.insert(0, os.path.abspath( os.path.join(here, "../" ) ) )  # needed to find odscharts development version
 sys.path.insert(0, os.path.abspath( os.path.join(here, "../../" ) ) )  # needed to find odscharts development version
 
 from odscharts.spreadsheet import SpreadSheet
@@ -20,7 +21,7 @@ list_of_rows = [['Altitude','Pressure','Temperature','Temperature'],
                 [60000, 1.04, 390, 216.6667]]
 
 my_class.add_sheet('Alt_Data', list_of_rows)
-my_class.save( filename=os.path.join(here,'alt_table'), debug=False)
+#my_class.save( filename=os.path.join(here,'alt_table'), debug=False)
 
 
 my_class.add_scatter( 'Alt_Plot', 'Alt_Data',
@@ -29,7 +30,7 @@ my_class.add_scatter( 'Alt_Plot', 'Alt_Data',
                           xcol=1,
                           ycolL=[2], ycol2L=None,
                           labelL=None, label2L=None)
-my_class.save( filename=os.path.join(here,'alt_1_plot'), debug=False)
+#my_class.save( filename=os.path.join(here,'alt_1_plot'), debug=False)
                           
 my_class.add_scatter( 'Alt_2_Plot', 'Alt_Data',
                           title='Temperature vs Altitude', xlabel='Altitude', 
@@ -37,7 +38,7 @@ my_class.add_scatter( 'Alt_2_Plot', 'Alt_Data',
                           xcol=1,
                           ycolL=[3,4], ycol2L=None,
                           labelL=None, label2L=None)
-my_class.save( filename=os.path.join(here,'alt_2_plot'), debug=False)
+#my_class.save( filename=os.path.join(here,'alt_2_plot'), debug=False)
 
 my_class.add_scatter( 'Alt_3_Plot', 'Alt_Data',
                           title='T&P vs Altitude', xlabel='Altitude', 

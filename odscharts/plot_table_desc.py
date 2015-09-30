@@ -32,7 +32,7 @@ class PlotTableDesc(object):
         newsheet = ET.Element(NS('table:table'), attrib=attribD)
 
         table_shapes  = ET.Element(NS('table:shapes'))
-        print( 'table_shapes.text =',table_shapes.text )
+        #print( 'table_shapes.text =',table_shapes.text )
         
         def NS_attrib( attD ):
             D = {}

@@ -23,7 +23,7 @@ See the Docs at: `<http://odscharts.readthedocs.org/en/latest/>`_
 
 See PyPI page at:`<https://pypi.python.org/pypi/odscharts>`_
 
-.. warning:: This is Pre-Alpha Code.  Not Yet Ready for use.
+.. warning:: This is Alpha Code. We're pretty early in the development cycle.
 
 ODSCharts will create ods files readable by either Microsoft Excel or OpenOffice.
 

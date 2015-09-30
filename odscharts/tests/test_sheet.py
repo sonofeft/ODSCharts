@@ -70,6 +70,8 @@ class MyTest(unittest.TestCase):
                                   ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
                                   xcol=1,
                                   ycolL=[2,3,4], ycol2L=None,
+                                  showMarkerL=[1,1,1], showMarker2L=None,
+                                  colorL=None, #['#666666'],
                                   labelL=None, label2L=None)
                                   
         #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')

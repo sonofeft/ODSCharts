@@ -7,6 +7,7 @@ from math import *
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+sys.path.insert(0, os.path.abspath( os.path.join(here, "../" ) ) )  # needed to find odscharts development version
 sys.path.insert(0, os.path.abspath( os.path.join(here, "../../" ) ) )  # needed to find odscharts development version
 
 from odscharts.spreadsheet import SpreadSheet
@@ -15,7 +16,7 @@ from odscharts.spreadsheet import SpreadSheet
 my_class = SpreadSheet()
 
 list_of_rows = [['Angle','Sine','Cosine'], ['deg','','']]
-for iang in xrange( 3601 ):
+for iang in range( 3601 ):
     ang_deg = float(iang) / 10.0
     ang = radians(ang_deg)
     
