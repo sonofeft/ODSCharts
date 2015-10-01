@@ -172,12 +172,12 @@ class SpreadSheet(object):
         parent_obj.qnameOD[tag] = parent_obj.nsOD[uri] + ':' + name
 
 
-    def setXrange(self, xmin=None, xmax=None, plot_sheetname=None):
+    def setAxisRange(self, axis_name, min_val=None, max_val=None, plot_sheetname=None):
         """
-        Set the X range of the named plot to xmin, xmax.
+        Set the Axis range of the named plot to min_val, max_val.
         If no plot_sheetname is provided, use the latest plot (if any).
-        If no xmin is provided, ignore it.
-        If no xmax is provided, ignore it.
+        If no min_val is provided, ignore it.
+        If no max_val is provided, ignore it.
         """
         
         # use latest plot_sheetname if no name is provided
@@ -190,20 +190,46 @@ class SpreadSheet(object):
         
         auto_styles = chart_obj.find('office:automatic-styles')
         minmax_style,ipos_minmax_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
-                                   attrib={'style:name':'Axs0'}, nth_match=0)
+                                   attrib={'style:name':'%s'%axis_name}, nth_match=0)
         print( 'FOUND:  ipos_minmax_style = ', ipos_minmax_style )
         
         chart_prop = minmax_style.find( NS('style:chart-properties', nsOD) )
         
-        if not xmin is None:
-            chart_prop.set( NS('chart:minimum', nsOD), '%g'%xmin )
+        if not min_val is None:
+            chart_prop.set( NS('chart:minimum', nsOD), '%g'%min_val )
             self.add_tag( NS('chart:minimum', nsOD), chart_obj )
             
-        if not xmax is None:
-            chart_prop.set( NS('chart:maximum', nsOD), '%g'%xmax )
+        if not max_val is None:
+            chart_prop.set( NS('chart:maximum', nsOD), '%g'%max_val )
             self.add_tag( NS('chart:maximum', nsOD), chart_obj )
             
-        
+
+    def setXrange(self, xmin=None, xmax=None, plot_sheetname=None):
+        """
+        Set the X range of the named plot to xmin, xmax.
+        If no plot_sheetname is provided, use the latest plot (if any).
+        If no xmin is provided, ignore it.
+        If no xmax is provided, ignore it.
+        """
+        self.setAxisRange( 'Axs0' ,min_val=xmin, max_val=xmax, plot_sheetname=plot_sheetname)
+
+    def setYrange(self, ymin=None, ymax=None, plot_sheetname=None):
+        """
+        Set the Y range of the named plot to ymin, ymax.
+        If no plot_sheetname is provided, use the latest plot (if any).
+        If no ymin is provided, ignore it.
+        If no ymax is provided, ignore it.
+        """
+        self.setAxisRange( 'Axs1' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+
+    def setY2range(self, ymin=None, ymax=None, plot_sheetname=None):
+        """
+        Set the Y2 range of the named plot to ymin, ymax.
+        If no plot_sheetname is provided, use the latest plot (if any).
+        If no ymin is provided, ignore it.
+        If no ymax is provided, ignore it.
+        """
+        self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
                       title='', xlabel='', ylabel='', y2label='',

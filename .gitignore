@@ -4,7 +4,7 @@ __pycache__/
 
 backup/
 
-odscharts/tests/performance.ods
+odscharts/tests/*.ods
 
 # C extensions
 *.so
@@ -59,10 +59,5 @@ docs/_build/
 
 # PyBuilder
 target/
-odscharts/tests/performance.ods
 
-odscharts/tests/alt.ods
-odscharts/tests/alt_all_log.ods
-odscharts/tests/alt_y2.ods
-odscharts/tests/alt_logy.ods
-odscharts/tests/alt_logx.ods
+

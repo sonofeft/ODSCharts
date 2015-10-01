@@ -85,7 +85,8 @@ class MyTest(unittest.TestCase):
                                   colorL=None, #['#666666'],
                                   labelL=None, label2L=None)
         
-        self.mySprSht.setXrange( 10000, 40000, plot_sheetname=None)
+        self.mySprSht.setXrange( -10000, 70000, plot_sheetname=None)
+        self.mySprSht.setYrange(-100, 700)
         #self.mySprSht.add_scatter( 'Alt_Plot2', 'Alt_Data')
         #self.mySprSht.add_scatter( 'Alt_Plot3', 'Alt_Data')
         self.mySprSht.save( filename=os.path.join(here,'alt'), debug=False)
@@ -104,7 +105,8 @@ class MyTest(unittest.TestCase):
                                   showMarkerL=[1,1,1], showMarker2L=None,
                                   colorL=None,
                                   labelL=None, label2L=None)
-                                  
+        
+        self.mySprSht.setY2range(50, 550)        
         self.mySprSht.save( filename=os.path.join(here,'alt_y2'), debug=False)
         
 

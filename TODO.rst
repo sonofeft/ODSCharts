@@ -3,7 +3,7 @@
 TODO
 ====
 
-* Add setXrange, setYrange, setY2range
+* Remove __pycache__ from distro
 
 * Add Text Box
 
