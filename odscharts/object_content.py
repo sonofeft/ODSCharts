@@ -63,34 +63,62 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     chart = chart_obj.find('office:body/office:chart/chart:chart')
 
     title = chart.find('chart:title/text:p', chart_obj.rev_nsOD)
-    #print( title.text)
+    #print( 'title.text = ',title.text)
     title.text = plot_desc.title
 
     plot_area = chart.find('chart:plot-area', chart_obj.rev_nsOD)
+    #print( 'plot_area =',plot_area )
 
     axisL = plot_area.findall('chart:axis', chart_obj.rev_nsOD)
+    #print( 'axisL =',axisL )
     xaxis = None
     yaxis = None
+    x2axis = None
+    y2axis = None
     for axis in axisL:
-        dim_name = axis.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}dimension')
-        if dim_name == 'x':
+        dim_xy = axis.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}dimension')
+        dim_name = axis.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}name')
+        #print( 'dim_xy =',dim_xy )
+        if dim_xy == 'x' and dim_name == 'primary-x':
             xaxis = axis
-        if dim_name == 'y':
+        if dim_xy == 'y' and dim_name == 'primary-y':
             yaxis = axis
+
+        # ODDLY... Excel uses capital X in "secondary-X" label
+        #if dim_xy == 'x' and dim_name.startswith('secondary'):
+        #    x2axis = axis
+        if dim_xy == 'y' and dim_name.startswith('secondary'):
+            y2axis = axis
 
     xtitle = xaxis.find('chart:title/text:p', chart_obj.rev_nsOD)
     ytitle = yaxis.find('chart:title/text:p', chart_obj.rev_nsOD)
     xtitle.text = plot_desc.xlabel
     ytitle.text = plot_desc.ylabel
     
+    # Look for secondary y axis 
+    if plot_desc.ycol2L:
+        #x2title = x2axis.find('chart:title/text:p', chart_obj.rev_nsOD)
+        y2title = y2axis.find('chart:title/text:p', chart_obj.rev_nsOD)
+        #x2title.text = plot_desc.xlabel # NOTE: I only allow one X axis label
+        y2title.text = plot_desc.y2label
     
-    chart_series = plot_area.find('chart:series', chart_obj.rev_nsOD)
-    node_print( chart_series )
+    
+    chart_seriesL = plot_area.findall('chart:series', chart_obj.rev_nsOD)
+    y_series = None
+    y2_series = None
+    for c_series in chart_seriesL:
+        axis_name = c_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}attached-axis')
+        if axis_name == 'primary-y':
+            y_series = c_series
+        if axis_name == 'secondary-y':
+            y2_series = c_series
+    print( 'y2_series =',y2_series )
 
-    series_label_cell_address = chart_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
+    # =============== Primary Y Axis =========================
+    series_label_cell_address = y_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
     print( 'series_label_cell_address =',series_label_cell_address)
 
-    series_value_cell_range = chart_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address')
+    series_value_cell_range = y_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address')
     print( 'series_value_cell_range =',series_value_cell_range)
     ycol = plot_desc.ycolL[0]
     col_letter = get_col_letters_from_number( ycol )
@@ -99,11 +127,11 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     print( 'val_cell_range =',val_cell_range)
     
     lab_cell = '%s.$%s$1'%(sht_name, col_letter)
-    chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
-    chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
+    y_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
+    y_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
 
-    chart_domain = chart_series.find('chart:domain', chart_obj.rev_nsOD)
-    chart_data_point = chart_series.find('chart:data-point', chart_obj.rev_nsOD)
+    chart_domain = y_series.find('chart:domain', chart_obj.rev_nsOD)
+    chart_data_point = y_series.find('chart:data-point', chart_obj.rev_nsOD)
     #print( chart_domain.items())
     #print( chart_data_point.items())
 
@@ -162,7 +190,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
             auto_styles.insert(istyle_loc, new_style )
             istyle_loc += 1
             
-            new_chart_series = deepcopy( chart_series )
+            new_chart_series = deepcopy( y_series )
             new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name','G0S%i'%nG0S)
             
             col_letter = get_col_letters_from_number( ycol )
@@ -178,6 +206,102 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
             plot_area.insert(ipos, new_chart_series )
 
             nG0S += 1
+
+    # =============== Secondary Y Axis =========================
+    # Look for secondary y axis 
+    if plot_desc.ycol2L:
+        series_label_cell_address = y2_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
+        print( 'Y2 series_label_cell_address =',series_label_cell_address)
+
+        series_value_cell_range = y2_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address')
+        print( 'Y2 series_value_cell_range =',series_value_cell_range)
+        ycol = plot_desc.ycol2L[0]
+        col_letter = get_col_letters_from_number( ycol )
+        sht_name = plot_desc.data_sheetname
+        val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,table_desc.nrows)
+        print( 'Y2 val_cell_range =',val_cell_range)
+        
+        lab_cell = '%s.$%s$1'%(sht_name, col_letter)
+        y2_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
+        y2_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
+
+        chart_domain = y2_series.find('chart:domain', chart_obj.rev_nsOD)
+        chart_data_point = y2_series.find('chart:data-point', chart_obj.rev_nsOD)
+        #print( chart_domain.items())
+        #print( chart_data_point.items())
+
+        xcol = plot_desc.xcol
+        xcol_letter = get_col_letters_from_number( xcol )
+        xval_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,xcol_letter,xcol_letter,table_desc.nrows)
+        chart_domain.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
+        
+        chart_data_point.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}repeated','%i'%(table_desc.nrows-2,))
+        
+        if len(plot_desc.ycol2L) > 1:
+            auto_styles = chart_obj.find('office:automatic-styles')
+            autostyleL = auto_styles.findall('style:style', chart_obj.rev_nsOD)
+            ref_series_style = None
+            
+            istyle_loc = 0
+            for iloc,astyle in enumerate(autostyleL):
+                if astyle.get('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name') == 'G1S0':
+                    ref_series_style = astyle
+                    istyle_loc = iloc + 2
+                    
+                    elem = ref_series_style.find("style:graphic-properties", chart_obj.rev_nsOD)
+                    c = plot_desc.color2L[0]  # get_color( 0, inp_color=plot_desc.color2L[0] )
+                    if not c is None:
+                        elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c)                
+                        elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
+                    
+                    elem = ref_series_style.find("style:chart-properties", chart_obj.rev_nsOD)
+                    if plot_desc.showMarkerL[0]:  # showMarkerL is guaranteed to have same dimension as ycol2L
+                        elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
+                    else:    
+                        elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
+                        
+                    
+            #print( ref_series_style.items())
+            
+            nG1S = 1
+            for ycol in plot_desc.ycol2L[1:]:
+                new_style = deepcopy( ref_series_style )
+                new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G1S%i'%nG1S )
+
+                elem = new_style.find("style:graphic-properties", chart_obj.rev_nsOD)
+                c = plot_desc.color2L[nG1S]  #get_color( nG1S, inp_color=plot_desc.color2L[nG1S] )
+                if not c is None:
+                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
+                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
+
+
+                elem = new_style.find("style:chart-properties", chart_obj.rev_nsOD)
+                if plot_desc.showMarkerL[nG1S]:  # showMarkerL is guaranteed to have same dimension as ycol2L
+                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
+                else:
+                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
+                
+                
+                auto_styles.insert(istyle_loc, new_style )
+                istyle_loc += 1
+                
+                new_chart_series = deepcopy( y2_series )
+                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name','G1S%i'%nG1S)
+                
+                col_letter = get_col_letters_from_number( ycol )
+                sht_name = plot_desc.data_sheetname
+                val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,table_desc.nrows)
+                print( 'val_cell_range =',val_cell_range)
+        
+                lab_cell = '%s.$%s$1'%(sht_name, col_letter)
+                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
+                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
+
+                ipos = len(plot_area)-1
+                plot_area.insert(ipos, new_chart_series )
+
+                nG1S += 1
+        
     
     plot_desc.chart_obj = chart_obj
     

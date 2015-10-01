@@ -167,7 +167,7 @@ class SpreadSheet(object):
                       title='', xlabel='', ylabel='', y2label='',
                       xcol=1, logx=False, logy=False, log2y=False,
                       ycolL=None, ycol2L=None,
-                      showMarkerL=None, showMarker2L=None,
+                      showMarkerL=None, showMarker2L=None, showUnits=True,
                       colorL=None, color2L=None,
                       labelL=None, label2L=None):
         """Add a scatter plot to the spread sheet.
@@ -227,22 +227,23 @@ class SpreadSheet(object):
         showMarkerL = fill_out_list( ycolL, showMarkerL, True )
         showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
         
-        def fill_out_color_list(yL, cL):
+        def fill_out_color_list(yL, cL, ioffset=0):
             if type(cL) == type([1,2,3]):
                 while len(cL) < len(yL):
-                    cL.append( get_color( len(cL)) )
+                    cL.append( get_color( len(cL) + ioffset) )
             #elif cL is None:
             #    cL = [None for i in range(len(yL))]
             else:
-                cL = [get_color(i) for i in range(len(yL))]
+                cL = [get_color(i+ioffset) for i in range(len(yL))]
                 #cL = [None for i in range(len(yL))]
             return cL
         
         colorL = fill_out_color_list( ycolL, colorL)
-        color2L = fill_out_color_list( ycolL, color2L)
+        color2L = fill_out_color_list( ycolL, color2L, ioffset=len(colorL))
         
         plot_desc.showMarkerL = showMarkerL
         plot_desc.showMarker2L = showMarker2L
+        plot_desc.showUnits = showUnits
         
         plot_desc.colorL = colorL
         plot_desc.color2L = color2L
@@ -254,7 +255,10 @@ class SpreadSheet(object):
         table_desc = self.data_table_objD[data_sheetname]
         
         # create a new chart object
-        chart_obj = load_template_xml_from_ods('alt_chart.ods', 'content.xml', subdir='Object 1')
+        if ycol2L:
+            chart_obj = load_template_xml_from_ods('alt_chart_y2.ods', 'content.xml', subdir='Object 1')
+        else:
+            chart_obj = load_template_xml_from_ods('alt_chart.ods', 'content.xml', subdir='Object 1')
         
         build_chart_object_content( chart_obj, plot_desc, table_desc )
         
