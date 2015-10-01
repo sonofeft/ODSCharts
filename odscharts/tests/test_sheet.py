@@ -34,7 +34,7 @@ if up_one not in sys.path[:2]:
 
 from odscharts.spreadsheet import SpreadSheet
 
-ALT_DATA = [['Altitude','Pressure','Temperature','Temperature'], 
+ALT_DATA = [['Altitude','Pressure','Temp R','Temp K'], 
             ['feet','psia','degR','degK'], 
             [0,      14.7, 518.7, 288.1667], 
             [5000,  12.23, 500.8, 278.2222], 
@@ -44,7 +44,7 @@ ALT_DATA = [['Altitude','Pressure','Temperature','Temperature'],
 
 ALT_DATA_WIDE = [ALT_DATA[0][:], ALT_DATA[1][:], ALT_DATA[2][:], ALT_DATA[3][:], 
                  ALT_DATA[4][:], ALT_DATA[5][:], ALT_DATA[6][:]]
-ALT_DATA_WIDE[0].extend(['Temperature','Temperature'])
+ALT_DATA_WIDE[0].extend(['Temp F','Temp C'])
 ALT_DATA_WIDE[1].extend(['degF','degC'])
 for i in range(2,7):
     ALT_DATA_WIDE[i].extend( [ALT_DATA_WIDE[i][2]-459.67, ALT_DATA_WIDE[i][3]-273.15] )

@@ -92,8 +92,17 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
 
     xtitle = xaxis.find('chart:title/text:p', chart_obj.rev_nsOD)
     ytitle = yaxis.find('chart:title/text:p', chart_obj.rev_nsOD)
+    
     xtitle.text = plot_desc.xlabel
+    if plot_desc.showUnits:
+        xcol_units = table_desc.list_of_rows[1][plot_desc.xcol-1]
+        xtitle.text = plot_desc.xlabel + ' (%s)'%xcol_units
+    
     ytitle.text = plot_desc.ylabel
+    if plot_desc.showUnits and plot_desc.ycolL:
+        unitSet = set( [table_desc.list_of_rows[1][ycol-1] for ycol in plot_desc.ycolL] )
+        unitL = sorted( list(unitSet) )
+        ytitle.text = plot_desc.ylabel + ' (%s)'%( ', '.join(unitL), )
     
     # Look for secondary y axis 
     if plot_desc.ycol2L:
@@ -101,6 +110,10 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         y2title = y2axis.find('chart:title/text:p', chart_obj.rev_nsOD)
         #x2title.text = plot_desc.xlabel # NOTE: I only allow one X axis label
         y2title.text = plot_desc.y2label
+        if plot_desc.showUnits:
+            unitSet = set( [table_desc.list_of_rows[1][ycol2-1] for ycol2 in plot_desc.ycol2L] )
+            unitL = sorted( list(unitSet) )
+            y2title.text = plot_desc.y2label + ' (%s)'%( ', '.join(unitL), )
     
     
     chart_seriesL = plot_area.findall('chart:series', chart_obj.rev_nsOD)
