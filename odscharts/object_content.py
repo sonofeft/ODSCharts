@@ -184,13 +184,14 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         logx_style,ipos_logx_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                    attrib={'style:name':'G0S0'}, nth_match=0)
         print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
-        new_elem_1 = ET.SubElement(logx_style,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}style", 
+        new_elem_1 = ET.SubElement(auto_styles,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}style", 
             attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}family', 'chart'), 
             ('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'GMi0')]))
         
         new_elem_2 = ET.SubElement(new_elem_1,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}graphic-properties", 
             attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill', 'none'), 
-            ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke', 'solid'), 
+            ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke', 'dash'), 
+            ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash', 'a4'), 
             ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-width', '0.01042in'), 
             ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color', '#000000'), 
             ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-opacity', '100%'), 
@@ -225,7 +226,51 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
                 else:    
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
-                    
+        
+        # Look for logarithmic scale on primary y
+        if plot_desc.logy:
+            print 'Got log y'
+        
+            # Find "Axs1"
+            logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
+                                       attrib={'style:name':'Axs1'}, nth_match=0)
+            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            chart_prop = logy_style.find( NS('style:chart-properties', nsOD) )
+            
+            chart_prop.set( NS("chart:logarithmic", nsOD), "true" )
+            chart_prop.set( NS("chart:tick-marks-minor-inner", nsOD), "true" )
+            chart_prop.set( NS("chart:tick-marks-minor-outer", nsOD), "true" )
+
+        
+            # Find "GMa1"
+            logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
+                                       attrib={'style:name':'GMa1'}, nth_match=0)
+            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            logy_style.set( NS("draw:stroke", nsOD), "dash" )
+        
+            # Find "G0S1"
+            logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
+                                       attrib={'style:name':'G0S1'}, nth_match=0)
+            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            
+            new_elem_1 = ET.SubElement(auto_styles,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}style", 
+                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}family', 'chart'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'GMi1')]))
+            
+            new_elem_2 = ET.SubElement(new_elem_1,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}graphic-properties", 
+                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill', 'none'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke', 'dash'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash', 'a4'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-width', '0.01042in'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color', '#000000'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-opacity', '100%'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-linejoin', 'round')]))
+            
+            # Add minor grid to yaxis
+            new_elem_3 = ET.SubElement(yaxis,"{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}grid", 
+                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}class', 'minor'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', 'GMi1')]))
+
                 
         #print( ref_series_style.items())
         

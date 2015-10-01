@@ -126,6 +126,23 @@ class MyTest(unittest.TestCase):
         self.myclass.save( filename=os.path.join(here,'alt_logx'), debug=False)
 
 
+    def test_logy_save(self):
+        """Check that save operates cleanly"""
+        list_of_rows = ALT_DATA
+        
+        self.myclass.add_sheet('Alt_Data', list_of_rows)
+        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+                                  title='Unittest Title', xlabel='Unittest X Axis', 
+                                  ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
+                                  xcol=1, logy=True,
+                                  ycolL=[3,4], ycol2L=None,
+                                  showMarkerL=[1,1,1], showMarker2L=None,
+                                  colorL=None, #['#666666'],
+                                  labelL=None, label2L=None)
+                                  
+        self.myclass.save( filename=os.path.join(here,'alt_logy'), debug=False)
+
+
 if __name__ == '__main__':
     # Can test just this file from command prompt
     #  or it can be part of test discovery from nose, unittest, pytest, etc.
