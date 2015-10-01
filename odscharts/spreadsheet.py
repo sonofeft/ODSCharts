@@ -214,6 +214,10 @@ class SpreadSheet(object):
         plot_desc.ycolL = ycolL
         plot_desc.ycol2L = ycol2L
         
+        plot_desc.logx = logx
+        plot_desc.logy = logy
+        plot_desc.log2y = log2y
+        
         def fill_out_list( yL, valL, default_val=None):
             if yL is None:
                 pass

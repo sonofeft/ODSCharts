@@ -36,7 +36,7 @@ from odscharts.spreadsheet import SpreadSheet
 
 ALT_DATA = [['Altitude','Pressure','Temp R','Temp K'], 
             ['feet','psia','degR','degK'], 
-            [0,      14.7, 518.7, 288.1667], 
+            [1,      14.7, 518.7, 288.1667], 
             [5000,  12.23, 500.8, 278.2222], 
             [10000, 10.11, 483.0, 268.3333], 
             [30000,  4.36, 411.8, 228.7778],
@@ -108,6 +108,22 @@ class MyTest(unittest.TestCase):
         #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
         self.myclass.save( filename=os.path.join(here,'alt_y2'), debug=False)
         
+
+    def test_logx_save(self):
+        """Check that save operates cleanly"""
+        list_of_rows = ALT_DATA
+        
+        self.myclass.add_sheet('Alt_Data', list_of_rows)
+        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+                                  title='Unittest Title', xlabel='Unittest X Axis', 
+                                  ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
+                                  xcol=1, logx=True,
+                                  ycolL=[3,4], ycol2L=None,
+                                  showMarkerL=[1,1,1], showMarker2L=None,
+                                  colorL=None, #['#666666'],
+                                  labelL=None, label2L=None)
+                                  
+        self.myclass.save( filename=os.path.join(here,'alt_logx'), debug=False)
 
 
 if __name__ == '__main__':
