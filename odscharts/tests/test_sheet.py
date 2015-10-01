@@ -53,11 +53,11 @@ class MyTest(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        self.myclass = SpreadSheet()
+        self.mySprSht = SpreadSheet()
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
-        del( self.myclass )
+        del( self.mySprSht )
 
     def test_should_always_pass_cleanly(self):
         """Should always pass cleanly."""
@@ -65,9 +65,9 @@ class MyTest(unittest.TestCase):
 
     def test_myclass_existence(self):
         """Check that myclass exists"""
-        result = self.myclass
+        result = self.mySprSht
 
-        # See if the self.myclass object exists
+        # See if the self.mySprSht object exists
         self.assertTrue(result)
     
 
@@ -75,8 +75,8 @@ class MyTest(unittest.TestCase):
         """Check that save operates cleanly"""
         list_of_rows = ALT_DATA
         
-        self.myclass.add_sheet('Alt_Data', list_of_rows)
-        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+        self.mySprSht.add_sheet('Alt_Data', list_of_rows)
+        self.mySprSht.add_scatter( 'Alt_Plot', 'Alt_Data',
                                   title='Unittest Title', xlabel='Unittest X Axis', 
                                   ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
                                   xcol=1,
@@ -84,82 +84,95 @@ class MyTest(unittest.TestCase):
                                   showMarkerL=[1,1,1], showMarker2L=None,
                                   colorL=None, #['#666666'],
                                   labelL=None, label2L=None)
-                                  
-        #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')
-        #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
-        self.myclass.save( filename=os.path.join(here,'alt'), debug=False)
+        
+        self.mySprSht.setXrange( 10000, 40000, plot_sheetname=None)
+        #self.mySprSht.add_scatter( 'Alt_Plot2', 'Alt_Data')
+        #self.mySprSht.add_scatter( 'Alt_Plot3', 'Alt_Data')
+        self.mySprSht.save( filename=os.path.join(here,'alt'), debug=False)
         
 
     def test_save_secondary_y(self):
         """Check that save operates for a second y axis"""
         list_of_rows = ALT_DATA_WIDE
         
-        self.myclass.add_sheet('Alt_Data', list_of_rows)
-        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+        self.mySprSht.add_sheet('Alt_Data', list_of_rows)
+        self.mySprSht.add_scatter( 'Alt_Plot', 'Alt_Data',
                                   title='Unittest Title', xlabel='Unittest X Axis', 
                                   ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
                                   xcol=1,
                                   ycolL=[2,5,6], ycol2L=[3,4],
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  colorL=None, #['#666666'],
+                                  colorL=None,
                                   labelL=None, label2L=None)
                                   
-        #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')
-        #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
-        self.myclass.save( filename=os.path.join(here,'alt_y2'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_y2'), debug=False)
         
 
     def test_logx_save(self):
         """Check that save operates cleanly"""
         list_of_rows = ALT_DATA
         
-        self.myclass.add_sheet('Alt_Data', list_of_rows)
-        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+        self.mySprSht.add_sheet('Alt_Data', list_of_rows)
+        self.mySprSht.add_scatter( 'Alt_Plot', 'Alt_Data',
                                   title='Unittest Title', xlabel='Unittest X Axis', 
                                   ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
                                   xcol=1, logx=True,
                                   ycolL=[3,4], ycol2L=None,
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  colorL=None, #['#666666'],
+                                  colorL=None,
                                   labelL=None, label2L=None)
                                   
-        self.myclass.save( filename=os.path.join(here,'alt_logx'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_logx'), debug=False)
 
 
     def test_logy_save(self):
         """Check that save operates cleanly"""
         list_of_rows = ALT_DATA
         
-        self.myclass.add_sheet('Alt_Data', list_of_rows)
-        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+        self.mySprSht.add_sheet('Alt_Data', list_of_rows)
+        self.mySprSht.add_scatter( 'Alt_Plot', 'Alt_Data',
                                   title='Unittest Title', xlabel='Unittest X Axis', 
                                   ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
                                   xcol=1, logy=True,
                                   ycolL=[3,4], ycol2L=None,
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  colorL=None, #['#666666'],
+                                  colorL=None,
                                   labelL=None, label2L=None)
                                   
-        self.myclass.save( filename=os.path.join(here,'alt_logy'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_logy'), debug=False)
 
 
     def test_log2y_save(self):
         """Check that save operates for a second y axis"""
         list_of_rows = ALT_DATA_WIDE
         
-        self.myclass.add_sheet('Alt_Data', list_of_rows)
-        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+        self.mySprSht.add_sheet('Alt_Data', list_of_rows)
+        self.mySprSht.add_scatter( 'Alt_Plot', 'Alt_Data',
                                   title='Unittest Title', xlabel='Unittest X Axis', 
                                   ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
                                   xcol=1, log2y=True,
                                   ycolL=[2,5,6], ycol2L=[3,4],
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  colorL=None, #['#666666'],
+                                  colorL=None,
                                   labelL=None, label2L=None)
                                   
-        #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')
-        #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
-        self.myclass.save( filename=os.path.join(here,'alt_log2y'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_log2y'), debug=False)
+
+    def test_all_log_save(self):
+        """Check that save operates for a second y axis"""
+        list_of_rows = ALT_DATA_WIDE
+        
+        self.mySprSht.add_sheet('Alt_Data', list_of_rows)
+        self.mySprSht.add_scatter( 'Alt_Plot', 'Alt_Data',
+                                  title='Unittest Title', xlabel='Unittest X Axis', 
+                                  ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
+                                  xcol=1, log2y=True, logx=True, logy=True,
+                                  ycolL=[2,5,6], ycol2L=[3,4],
+                                  showMarkerL=[1,1,1], showMarker2L=None,
+                                  colorL=None,
+                                  labelL=None, label2L=None)
+                                  
+        self.mySprSht.save( filename=os.path.join(here,'alt_all_log'), debug=False)
         
 
 

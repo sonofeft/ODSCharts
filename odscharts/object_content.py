@@ -364,19 +364,21 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
                 attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}family', 'chart'), 
                 ('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'GMi2')]))
             
-            new_elem_2 = ET.SubElement(new_elem_1,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}graphic-properties", 
-                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill', 'none'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke', 'dash'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash', 'a4'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-width', '0.01042in'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color', '#000000'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-opacity', '100%'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-linejoin', 'round')]))
-            
-            # Add minor grid to yaxis
-            new_elem_3 = ET.SubElement(y2axis,"{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}grid", 
-                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}class', 'minor'), 
-                ('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', 'GMi2')]))
+            # Looks better with only one set of y grids... Seems obvious now
+            if 0:#plot_desc.ycolL and (not plot_desc.logy):
+                new_elem_2 = ET.SubElement(new_elem_1,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}graphic-properties", 
+                    attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill', 'none'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke', 'dash'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash', 'a4'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-width', '0.01042in'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color', '#000000'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-opacity', '100%'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-linejoin', 'round')]))
+                
+                # Add minor grid to yaxis
+                new_elem_3 = ET.SubElement(y2axis,"{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}grid", 
+                    attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}class', 'minor'), 
+                    ('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', 'GMi2')]))
 
 
 

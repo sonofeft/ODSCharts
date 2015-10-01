@@ -54,6 +54,7 @@ from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
 from object_content import build_chart_object_content, get_color
 from template_xml_file import TemplateXML_File
+from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -162,6 +163,47 @@ class SpreadSheet(object):
         stamp = "%04d-%02d-%02dT%02d:%02d:%02d" % (t[0], t[1], t[2], t[3], t[4], t[5])
         return stamp
 
+    # make sure any added Element objects are in nsOD, rev_nsOD and qnameOD of parent_obj
+    def add_tag(self, tag, parent_obj ):
+        sL = tag.split('}')
+        uri = sL[0][1:]
+        name = sL[1]
+        
+        parent_obj.qnameOD[tag] = parent_obj.nsOD[uri] + ':' + name
+
+
+    def setXrange(self, xmin=None, xmax=None, plot_sheetname=None):
+        """
+        Set the X range of the named plot to xmin, xmax.
+        If no plot_sheetname is provided, use the latest plot (if any).
+        If no xmin is provided, ignore it.
+        If no xmax is provided, ignore it.
+        """
+        
+        # use latest plot_sheetname if no name is provided
+        if plot_sheetname is None:
+            plot_sheetname = self.ordered_plotL[-1]
+            
+        plot_desc = self.plot_table_objD[plot_sheetname]
+        chart_obj = plot_desc.chart_obj
+        nsOD = chart_obj.rev_nsOD
+        
+        auto_styles = chart_obj.find('office:automatic-styles')
+        minmax_style,ipos_minmax_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
+                                   attrib={'style:name':'Axs0'}, nth_match=0)
+        print( 'FOUND:  ipos_minmax_style = ', ipos_minmax_style )
+        
+        chart_prop = minmax_style.find( NS('style:chart-properties', nsOD) )
+        
+        if not xmin is None:
+            chart_prop.set( NS('chart:minimum', nsOD), '%g'%xmin )
+            self.add_tag( NS('chart:minimum', nsOD), chart_obj )
+            
+        if not xmax is None:
+            chart_prop.set( NS('chart:maximum', nsOD), '%g'%xmax )
+            self.add_tag( NS('chart:maximum', nsOD), chart_obj )
+            
+        
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
                       title='', xlabel='', ylabel='', y2label='',
