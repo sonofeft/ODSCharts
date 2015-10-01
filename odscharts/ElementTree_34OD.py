@@ -908,9 +908,9 @@ def _serialize_xml(write, elem, qnames, namespaces,
     elif tag is ProcessingInstruction:
         write("<?%s?>" % text)
     else:
-        print('>>> tag =',tag,' in _serialize_xml')
-        print('>>> type(tag) =',type(tag),' in _serialize_xml')
-        print('>>> qnames =',qnames)
+        #print('>>> tag =',tag,' in _serialize_xml')
+        #print('>>> type(tag) =',type(tag),' in _serialize_xml')
+        #print('>>> qnames =',qnames)
         tag = qnames[tag]
         if tag is None:
             if text:

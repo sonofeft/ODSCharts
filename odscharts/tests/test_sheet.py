@@ -143,6 +143,26 @@ class MyTest(unittest.TestCase):
         self.myclass.save( filename=os.path.join(here,'alt_logy'), debug=False)
 
 
+    def test_log2y_save(self):
+        """Check that save operates for a second y axis"""
+        list_of_rows = ALT_DATA_WIDE
+        
+        self.myclass.add_sheet('Alt_Data', list_of_rows)
+        self.myclass.add_scatter( 'Alt_Plot', 'Alt_Data',
+                                  title='Unittest Title', xlabel='Unittest X Axis', 
+                                  ylabel='Unittest Y Axis', y2label='Unittest Y2 Axis',
+                                  xcol=1, log2y=True,
+                                  ycolL=[2,5,6], ycol2L=[3,4],
+                                  showMarkerL=[1,1,1], showMarker2L=None,
+                                  colorL=None, #['#666666'],
+                                  labelL=None, label2L=None)
+                                  
+        #self.myclass.add_scatter( 'Alt_Plot2', 'Alt_Data')
+        #self.myclass.add_scatter( 'Alt_Plot3', 'Alt_Data')
+        self.myclass.save( filename=os.path.join(here,'alt_log2y'), debug=False)
+        
+
+
 if __name__ == '__main__':
     # Can test just this file from command prompt
     #  or it can be part of test discovery from nose, unittest, pytest, etc.

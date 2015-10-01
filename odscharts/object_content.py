@@ -128,19 +128,19 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
             y_series = c_series
         if axis_name == 'secondary-y':
             y2_series = c_series
-    print( 'y2_series =',y2_series )
+    #print( 'y2_series =',y2_series )
 
     # =============== Primary Y Axis =========================
     series_label_cell_address = y_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
-    print( 'series_label_cell_address =',series_label_cell_address)
+    #print( 'series_label_cell_address =',series_label_cell_address)
 
     series_value_cell_range = y_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address')
-    print( 'series_value_cell_range =',series_value_cell_range)
+    #print( 'series_value_cell_range =',series_value_cell_range)
     ycol = plot_desc.ycolL[0]
     col_letter = get_col_letters_from_number( ycol )
     sht_name = plot_desc.data_sheetname
     val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,table_desc.nrows)
-    print( 'val_cell_range =',val_cell_range)
+    #print( 'val_cell_range =',val_cell_range)
     
     lab_cell = '%s.$%s$1'%(sht_name, col_letter)
     y_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
@@ -229,7 +229,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         
         # Look for logarithmic scale on primary y
         if plot_desc.logy:
-            print 'Got log y'
+            print( 'Got log y' )
         
             # Find "Axs1"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
@@ -342,7 +342,45 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         chart_domain.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
         
         chart_data_point.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}repeated','%i'%(table_desc.nrows-2,))
+
         
+        # Look for logarithmic scale on primary y
+        if plot_desc.log2y:
+            print( 'Got log on secondary y' )
+        
+            # Find "Axs2"
+            logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
+                                       attrib={'style:name':'Axs2'}, nth_match=0)
+            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            chart_prop = logy_style.find( NS('style:chart-properties', nsOD) )
+            
+            chart_prop.set( NS("chart:logarithmic", nsOD), "true" )
+            chart_prop.set( NS("chart:tick-marks-minor-inner", nsOD), "true" )
+            chart_prop.set( NS("chart:tick-marks-minor-outer", nsOD), "true" )
+        
+        
+            # Make "GMi2"
+            new_elem_1 = ET.SubElement(auto_styles,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}style", 
+                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}family', 'chart'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'GMi2')]))
+            
+            new_elem_2 = ET.SubElement(new_elem_1,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}graphic-properties", 
+                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill', 'none'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke', 'dash'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash', 'a4'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-width', '0.01042in'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color', '#000000'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-opacity', '100%'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-linejoin', 'round')]))
+            
+            # Add minor grid to yaxis
+            new_elem_3 = ET.SubElement(y2axis,"{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}grid", 
+                attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}class', 'minor'), 
+                ('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', 'GMi2')]))
+
+
+
+        #  If more than one curve on secondary y...
         if len(plot_desc.ycol2L) > 1:
             auto_styles = chart_obj.find('office:automatic-styles')
             autostyleL = auto_styles.findall('style:style', nsOD)
