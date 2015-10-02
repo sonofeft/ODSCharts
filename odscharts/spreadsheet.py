@@ -53,8 +53,9 @@ else:
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
-from object_content import build_chart_object_content,  COLOR_LIST
-from color_utils import BIG_COLOR_HEXSTR_LIST
+from object_content import build_chart_object_content
+
+from color_utils import BIG_COLOR_HEXSTR_LIST,  EXCEL_COLOR_LIST
 from template_xml_file import TemplateXML_File
 from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
@@ -290,7 +291,52 @@ class SpreadSheet(object):
         """
         self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
 
-    
+    def add_curve(self, plot_sheetname, data_sheetname, xcol=1,
+                    ycolL=None, ycol2L=None,
+                    showMarkerL=None, showMarker2L=None,
+                    colorL=None, color2L=None):
+        """
+        Not Yet Implemented
+        """
+        
+        # use latest plot_sheetname if no name is provided
+        if plot_sheetname is None:
+            plot_sheetname = self.ordered_plotL[-1]
+        
+        # use latest data_sheetname if no name is provided
+        if data_sheetname is None:
+            data_sheetname = self.ordered_dataL[-1]
+                        
+        # make sure that plot_sheetname and data_sheetname exist
+        if plot_sheetname not in self.plot_table_objD:
+            raise  MySheetNameError('Named plot sheet does NOT exist: "%s"'%plot_sheetname)
+
+        # Data sheet must already exist in order to make a plot
+        if data_sheetname not in self.data_table_objD:
+            raise  MySheetNameError('Named data sheet does NOT exist: "%s"'%data_sheetname)
+            
+        old_plot_desc = self.plot_table_objD[plot_sheetname]
+        plot_desc = deepcopy( old_plot_desc )
+        
+        plot_desc.plot_sheetname = plot_sheetname
+        plot_desc.data_sheetname = data_sheetname
+        #plot_desc.title = title
+        #plot_desc.xlabel = xlabel
+        #plot_desc.ylabel = ylabel
+        #plot_desc.y2label = y2label
+        plot_desc.xcol = xcol
+        plot_desc.ycolL = ycolL
+        plot_desc.ycol2L = ycol2L
+        
+        #plot_desc.logx = logx
+        #plot_desc.logy = logy
+        #plot_desc.log2y = log2y
+        
+        chart_obj = plot_desc.chart_obj
+        table_desc = self.data_table_objD[data_sheetname]
+        
+        #build_chart_object_content( chart_obj, plot_desc, table_desc )
+
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
                       title='', xlabel='', ylabel='', y2label='',
@@ -396,7 +442,7 @@ class SpreadSheet(object):
         
         plot_desc.i_color = 0 # index into color chart for next curve
         if excel_colors:
-            plot_desc.color_list = COLOR_LIST[:] # make copy of default color list
+            plot_desc.color_list = EXCEL_COLOR_LIST[:] # make copy of default color list
         else:
             plot_desc.color_list = BIG_COLOR_HEXSTR_LIST[:]
         
@@ -418,11 +464,15 @@ class SpreadSheet(object):
             if type(cL) == type([1,2,3]) and  type(yL) == type([1,2,3]):
                 for i,c in enumerate( cL ):
                     if c is not None:
-                        if i+ioffset < len( plot_desc.color_list ):
-                            plot_desc.color_list[i+ioffset] = c
+                        c = '%s'%c # make sure it's a string
+                        if c.startswith('#') and len(c)==7:
+                            if i+ioffset < len( plot_desc.color_list ):
+                                plot_desc.color_list[i+ioffset] = c
+                            else:
+                                # If number of curves larger than color list, append colors
+                                plot_desc.color_list.append(c)
                         else:
-                            # If number of curves larger than color list, append colors
-                            plot_desc.color_list.append(c)
+                            print('WARNING... illegal color string input "%s"'%c)
                 
         # put any input colors into plot_desc.color_list
         fill_out_color_list( ycolL, colorL)

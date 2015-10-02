@@ -59,5 +59,17 @@ mySprSht.add_scatter( 'USA_Plot', 'USA_Data',
                           xcol=1,
                           ycolL=[2,3,4])
 
+mySprSht.add_scatter( 'Combo_Plot', 'USA_Data',
+                          title='United States BMI', xlabel='Year', 
+                          ylabel='Percent of Population',
+                          xcol=1,
+                          ycolL=[2,3,4])
+
+if 1:
+    mySprSht.add_curve('Combo_Plot', 'Aussie_Data', 
+                    xcol=1,
+                    ycolL=[2,3,4], ycol2L=None,
+                    showMarkerL=None, showMarker2L=None,
+                    colorL=None, color2L=None)
 
 mySprSht.save( filename='bmi_index.ods', launch=True )

@@ -8,7 +8,7 @@ if sys.version_info < (3,):
 else:
     import ElementTree_34OD as ET
 
-from object_content import COLOR_LIST
+from color_utils import EXCEL_COLOR_LIST
 
 
 class PlotTableDesc(object):
@@ -40,7 +40,7 @@ class PlotTableDesc(object):
         
         """
         self.i_color = 0 # index into color chart for next curve
-        self.color_list = COLOR_LIST[:] # copy of default color list (reinitialized in spreadsheet)
+        self.color_list = EXCEL_COLOR_LIST[:] # copy of default color list (reinitialized in spreadsheet)
         
         NS = parent_obj.NS
         

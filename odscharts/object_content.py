@@ -22,36 +22,6 @@ def get_col_letters_from_number(num):
     return ''.join(reversed(letters))
 
 
-# These colors generated with color_utils.py
-#   Abandoned when I discovered that Excel marker colors are not supported.
-#COLOR_LIST = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF', 
-#              '#FF7F00', '#00FF7F', '#7F00FF', '#7FFF00', '#007FFF', '#FF007F', 
-#              '#B23535', '#35B235', '#3535B2', '#B2B235', '#35B2B2', '#B235B2', 
-#              '#B27435', '#35B274', '#7435B2', '#74B235', '#3574B2', '#B23574', 
-#              '#663D3D', '#3D663D', '#3D3D66', '#66663D', '#3D6666', '#663D66', 
-#              '#66513D', '#3D6651', '#513D66', '#51663D', '#3D5166', '#663D51']
-
-# These default colors are taken from Excel
-#  Since Excel does not support marker colors in ODS format, try to just use
-#  the Excel default colors so the marker color will match the line color
-COLOR_LIST = ['#325885', '#873331', '#6b833a', '#574271', '#2f788c', '#b0672b', 
-              '#3c679a', '#9d3d3a', '#7d9844', '#664e83', '#388ca2', '#cb7833', 
-              '#4373ab', '#ae4441', '#8ba94d', '#725792', '#3f9bb4', '#e1853a', 
-              '#4a7ebb', '#be4b48', '#98b954', '#7d60a0', '#46aac5', '#f69240', 
-              '#809cc7', '#ca817f', '#aec685', '#9c8bb3', '#7ebace', '#f6a97b', 
-              '#a5b6d3', '#d5a5a4', '#c1d2a7', '#b6abc5', '#a4cad8', '#f6bea2']
-
-def get_color( index, inp_color=None):
-    """Get colors for plot lines"""
-    list_color = COLOR_LIST[ index % len(COLOR_LIST) ]
-    
-    s = '%s'%inp_color
-    if not s.startswith('#'):
-        return list_color
-    if not len(s)==7:
-        return list_color
-    return inp_color
-
 def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     """When chart_obj is input, it still holds values from the original template"""
     

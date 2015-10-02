@@ -1,6 +1,16 @@
 from __future__ import print_function
 import colorsys
 
+# These default colors are taken from Excel
+#  Since Excel does not support marker colors in ODS format, try to just use
+#  the Excel default colors so the marker color will match the line color
+EXCEL_COLOR_LIST = ['#325885', '#873331', '#6b833a', '#574271', '#2f788c', '#b0672b', 
+                    '#3c679a', '#9d3d3a', '#7d9844', '#664e83', '#388ca2', '#cb7833', 
+                    '#4373ab', '#ae4441', '#8ba94d', '#725792', '#3f9bb4', '#e1853a', 
+                    '#4a7ebb', '#be4b48', '#98b954', '#7d60a0', '#46aac5', '#f69240', 
+                    '#809cc7', '#ca817f', '#aec685', '#9c8bb3', '#7ebace', '#f6a97b', 
+                    '#a5b6d3', '#d5a5a4', '#c1d2a7', '#b6abc5', '#a4cad8', '#f6bea2']
+
 def w3_luminance(r,g,b): # float values of r,g,b
     def condition( c ): # c is r,g or b
         if c<0.03928:
