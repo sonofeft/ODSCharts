@@ -8,6 +8,7 @@ if sys.version_info < (3,):
 else:
     import ElementTree_34OD as ET
 
+from object_content import COLOR_LIST
 
 
 class PlotTableDesc(object):
@@ -38,6 +39,8 @@ class PlotTableDesc(object):
             plot_sheetname: name of data sheet
         
         """
+        self.i_color = 0 # index into color chart for next curve
+        self.color_list = COLOR_LIST[:] # copy of default color list (reinitialized in spreadsheet)
         
         NS = parent_obj.NS
         

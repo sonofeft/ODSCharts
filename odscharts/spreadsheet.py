@@ -54,6 +54,7 @@ from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
 from object_content import build_chart_object_content,  COLOR_LIST
+from color_utils import BIG_COLOR_HEXSTR_LIST
 from template_xml_file import TemplateXML_File
 from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
@@ -289,9 +290,11 @@ class SpreadSheet(object):
         """
         self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
 
+    
+
     def add_scatter(self, plot_sheetname, data_sheetname, 
                       title='', xlabel='', ylabel='', y2label='',
-                      xcol=1, logx=False, logy=False, log2y=False,
+                      xcol=1, logx=False, logy=False, log2y=False, excel_colors=True,
                       ycolL=None, ycol2L=None,
                       showMarkerL=None, showMarker2L=None, showUnits=True,
                       colorL=None, color2L=None,
@@ -337,6 +340,7 @@ class SpreadSheet(object):
         :keyword bool logy: Flag for Primary Y Axis type. True=log, False=linear (default==False)
         :keyword bool log2y:  Flag for Secondary Y Axis type. True=log, False=linear (default==False)
         :keyword bool showUnits: Flag to control units display. True=show units on axes, False=show labels only (default==True)
+        :keyword bool excel_colors: Flag to control default color palette. True=use Excel colors, False=use custome colors.
         
         :keyword colorL: List of color values to use for ycolL curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
         :type  colorL: None or str list
@@ -359,6 +363,8 @@ class SpreadSheet(object):
             raise  MySheetNameError('Data sheet for "%s" plot missing: "%s"'%(plot_sheetname, data_sheetname))
 
         num_chart = len(self.plot_table_objD) + 1
+        
+        # Add new chart object and tab page in Excel/OpenOffice
         add_ObjectN( num_chart, self.metainf_manifest_xml_obj)
         
         plot_desc = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj)
@@ -389,7 +395,10 @@ class SpreadSheet(object):
         plot_desc.log2y = log2y
         
         plot_desc.i_color = 0 # index into color chart for next curve
-        plot_desc.color_list = COLOR_LIST[:] # make copy of default color list
+        if excel_colors:
+            plot_desc.color_list = COLOR_LIST[:] # make copy of default color list
+        else:
+            plot_desc.color_list = BIG_COLOR_HEXSTR_LIST[:]
         
         def fill_out_list( yL, valL, default_val=None):
             if yL is None:

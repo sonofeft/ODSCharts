@@ -5,9 +5,9 @@ TODO
 
 * Create an Examples page
 
-* Run history_from_github_api.py
+* Add utility to build list of rows from list of columns
 
-* Beef up add_scatter doc strings for sphinx page.
+* Run history_from_github_api.py
 
 * Enable labelL and label2L inputs
 
@@ -31,4 +31,4 @@ TODO
 
 * Date and Author on plots
 
-* Integrate xlCharts for direct COM control of Excel
+* Integrate xlCharts for direct COM control of Excel on Windows

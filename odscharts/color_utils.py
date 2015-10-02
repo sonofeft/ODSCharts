@@ -1,3 +1,4 @@
+from __future__ import print_function
 import colorsys
 
 def w3_luminance(r,g,b): # float values of r,g,b
@@ -163,7 +164,8 @@ def getColorName(i):
         
 def getColorHexStr(i):
     """Returns hex string of color in position i.  for example 0="#FF0000", 2="#0000FF"  """
-    return cnames[ getColorName(i) ]
+    return BIG_COLOR_HEXSTR_LIST[i % len(BIG_COLOR_HEXSTR_LIST)]
+    #return cnames[ getColorName(i) ]
     
 
 cnames = {
@@ -432,22 +434,22 @@ cnames = {
 # Make color name list w/o the stdList colors (in whatever order the hash delivers)
 big_colorname_list = stdList[:] # make a copy of stdList
 big_colorname_list.extend( list( set(cnames.keys()) - set(stdList) ) )
-
+BIG_COLOR_HEXSTR_LIST = [cnames[key] for key in big_colorname_list]
 
 if __name__=="__main__":
     
-    print "get_best_gray_text('#121212') =",get_best_gray_text('#121212')
+    print( "get_best_gray_text('#121212') =",get_best_gray_text('#121212') )
     
-    print
+    print()
     s1 = '#000000'
     for s in ['#000000','#ffffff','#669900','#cc0000']:
-        print 'contrast of',s1,'and',s,'=',w3_contrast(s1,s)
+        print( 'contrast of',s1,'and',s,'=',w3_contrast(s1,s))
         
-    print 
-    print
+    print() 
+    print()
     for s in ['#FF0000','#00FF00','#0000FF']:
         hue, sat, val = colorsys.rgb_to_hsv(*scale_rgb_tuple(hex_to_rgb(s)))
-        print '%s,  h=%s,  s=%s,  v=%s'%(s,hue, sat, val)
+        print( '%s,  h=%s,  s=%s,  v=%s'%(s,hue, sat, val))
         
     colorL = []
     hue, sat, val = 0., 1., 1.
@@ -468,13 +470,13 @@ if __name__=="__main__":
                     colorL.append( c )
                 hue += dh
             
-    print colorL
+    print( colorL)
             
     for i in range( 2*len(big_colorname_list) ):
         if i==len(big_colorname_list):
-            print
-            print
-        print getColorName(i), getColorHexStr(i),
+            print()
+            print()
+        print( getColorName(i), getColorHexStr(i), end='')
     
         
         
