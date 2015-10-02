@@ -3,11 +3,11 @@
 TODO
 ====
 
+* Run history_from_github_api.py
+
 * Beef up add_scatter doc strings for sphinx page.
 
 * Enable labelL and label2L inputs
-
-* Remove __pycache__ from distro
 
 * Add Text Box
 
@@ -29,3 +29,4 @@ TODO
 
 * Date and Author on plots
 
+* Integrate xlCharts for direct COM control of Excel
