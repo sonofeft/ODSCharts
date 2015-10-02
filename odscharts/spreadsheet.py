@@ -88,8 +88,10 @@ def load_template_xml_from_ods(ods_fname, fname, subdir='' ):
 
 
 def zipfile_insert( zipfileobj, filename, data):
-    """Create a file named filename, into the zip archive.
-       "data" is the string that is placed into filename.
+    """Create a file named filename, in the zip archive.
+       "data" is the UTF-8 string that is placed into filename.
+       
+       (Not called by User)
     """
 
     # zip seems to struggle with non-ascii characters
@@ -115,7 +117,8 @@ class SpreadSheet(object):
     
     def launch_application(self):
         """
-        Will launch Excel or Openoffice using os.startfile.
+        Will launch Excel or Openoffice using "os.startfile" or "open" or 
+        "xdg-open" depending on the platform.
         
         ONLY WORKS IF file has been saved.
         """
@@ -195,10 +198,13 @@ class SpreadSheet(object):
 
     def setAxisRange(self, axis_name, min_val=None, max_val=None, plot_sheetname=None):
         """
+        Generic routine used by setXrange, setYrange and setY2range. (Not called by User)
+        
         Set the Axis range of the named plot to min_val, max_val.
-        If no plot_sheetname is provided, use the latest plot (if any).
-        If no min_val is provided, ignore it.
-        If no max_val is provided, ignore it.
+        
+            * If no plot_sheetname is provided, use the latest plot (if any).
+            * If no min_val is provided, ignore it.
+            * If no max_val is provided, ignore it.
         """
         
         # use latest plot_sheetname if no name is provided
@@ -228,27 +234,58 @@ class SpreadSheet(object):
     def setXrange(self, xmin=None, xmax=None, plot_sheetname=None):
         """
         Set the X range of the named plot to xmin, xmax.
-        If no plot_sheetname is provided, use the latest plot (if any).
-        If no xmin is provided, ignore it.
-        If no xmax is provided, ignore it.
+        
+            * If no plot_sheetname is provided, use the latest plot (if any).
+            * If no min_val is provided, ignore it.
+            * If no max_val is provided, ignore it.
+            
+        :keyword float xmin: Minimum value on X Axis (default==None)
+        :type  xmin: float or None
+        :keyword float xmax: Maximum value on X Axis (default==None)
+        :type  xmax: float or None
+        :keyword None plot_sheetname:  (default==None)
+        :type  plot_sheetname: None or str or unicode
+        :return: None
+        :rtype: None
+            
         """
         self.setAxisRange( 'Axs0' ,min_val=xmin, max_val=xmax, plot_sheetname=plot_sheetname)
 
     def setYrange(self, ymin=None, ymax=None, plot_sheetname=None):
         """
         Set the Y range of the named plot to ymin, ymax.
-        If no plot_sheetname is provided, use the latest plot (if any).
-        If no ymin is provided, ignore it.
-        If no ymax is provided, ignore it.
+        
+            * If no plot_sheetname is provided, use the latest plot (if any).
+            * If no min_val is provided, ignore it.
+            * If no max_val is provided, ignore it.
+            
+        :keyword float ymin: Minimum value on Primary Y Axis (default==None)
+        :type  ymin: float or None
+        :keyword float ymax: Maximum value on Primary Y Axis (default==None)
+        :type  ymax: float or None
+        :keyword None plot_sheetname:  (default==None)
+        :type  plot_sheetname: None or str or unicode
+        :return: None
+        :rtype: None
         """
         self.setAxisRange( 'Axs1' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
 
     def setY2range(self, ymin=None, ymax=None, plot_sheetname=None):
         """
         Set the Y2 range of the named plot to ymin, ymax.
-        If no plot_sheetname is provided, use the latest plot (if any).
-        If no ymin is provided, ignore it.
-        If no ymax is provided, ignore it.
+        
+            * If no plot_sheetname is provided, use the latest plot (if any).
+            * If no min_val is provided, ignore it.
+            * If no max_val is provided, ignore it.
+            
+        :keyword float ymin: Minimum value on Secondary Y Axis (default==None)
+        :type  ymin: float or None
+        :keyword float ymax: Maximum value on Secondary Y Axis (default==None)
+        :type  ymax: float or None
+        :keyword None plot_sheetname:  (default==None)
+        :type  plot_sheetname: None or str or unicode
+        :return: None
+        :rtype: None
         """
         self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
 
@@ -259,15 +296,59 @@ class SpreadSheet(object):
                       showMarkerL=None, showMarker2L=None, showUnits=True,
                       colorL=None, color2L=None,
                       labelL=None, label2L=None):
-        """Add a scatter plot to the spread sheet.
+        """
+        Add a scatter plot to the spread sheet.
         
-           Use data from "data_sheetname" to create "plot_sheetname" with scatter plot.
+        Use data from "data_sheetname" to create "plot_sheetname" with scatter plot.
+       
+        Assume index into columns is "1-based" such that column "A" is 1, "B" is 2, etc.
+       
+        NOTE: marker color is NOT supported in Excel from ODS format. 
+        Markers will appear, but will be some other default color.
+        For this reason, ODSCharts uses Excel default color list unless the user
+        overrides them with colorL or color2L.
            
-           Assume index into columns is "1-based" such that column "A" is 1, "B" is 2, etc.
-           
-           NOTE: marker color is NOT supported in Excel from ODS format. 
-           Markers will appear, but will be some other default color.
-           
+        :param plot_sheetname: Name of the plot's tabbed window in Excel or OpenOffice
+        :type  plot_sheetname: str or unicode
+        :param data_sheetname: Name of the data's tabbed window in Excel or OpenOffice
+        :type  data_sheetname: str or unicode
+        
+        :keyword title: Title of the plot as displayed in  Excel or OpenOffice (default=='')
+        :type  title: str or unicode
+        :keyword xlabel: X Axis label as displayed in  Excel or OpenOffice (default=='')
+        :type  xlabel: str or unicode
+        :keyword ylabel: Primary Y Axis label as displayed in  Excel or OpenOffice (default=='')
+        :type  ylabel: str or unicode
+        :keyword y2label: Secondary Y Axis Label as displayed in  Excel or OpenOffice  (default=='')
+        :type  y2label: str or unicode
+        
+        :keyword int xcol: 1-based column index on data sheet of X Axis data (default==1)
+        
+        :keyword ycolL: List of 1-based column indeces on data sheet of Primary Y Axis data (default==None)
+        :type  ycolL: None or int list
+        :keyword ycol2L: List of 1-based column indeces on data sheet of Secondary Y Axis data  (default==None)
+        :type  ycol2L: None or int list
+        :keyword showMarkerL: List of boolean values indicating marker or no-marker for ycolL data (default==None)
+        :type  showMarkerL: None or bool list
+        :keyword showMarker2L: List of boolean values indicating marker or no-marker for ycol2L data (default==None)
+        :type  showMarker2L: None or bool list
+        
+        :keyword bool logx: Flag for X Axis type. True=log, False=linear (default==False)
+        :keyword bool logy: Flag for Primary Y Axis type. True=log, False=linear (default==False)
+        :keyword bool log2y:  Flag for Secondary Y Axis type. True=log, False=linear (default==False)
+        :keyword bool showUnits: Flag to control units display. True=show units on axes, False=show labels only (default==True)
+        
+        :keyword colorL: List of color values to use for ycolL curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
+        :type  colorL: None or str list
+        :keyword color2L: List of color values to use for ycol2L curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
+        :type  color2L: None or str list
+        :keyword labelL: Not yet implemented (default==None)
+        :type  labelL: None or str list
+        :keyword label2L: Not yet implemented (default==None)
+        :type  label2L: None or str list
+        
+        :return: None 
+        :rtype: None
         """
         # Don't allow duplicate sheet names
         if (plot_sheetname in self.data_table_objD) or (plot_sheetname in self.plot_table_objD):
@@ -373,11 +454,24 @@ class SpreadSheet(object):
             - row 3 through N is float or string entries
            
             for example:
-            list_of_rows = 
-            [['Altitude','Pressure','Temperature'], 
-            ['feet','psia','degR'], 
-            [0, 14.7, 518.7], [5000, 12.23, 500.8], 
-            [10000, 10.11, 483.0], [60000, 1.04, 390]]
+            list_of_rows = ::
+            
+                [['Altitude','Pressure','Temperature'], 
+                ['feet','psia','degR'], 
+                [0, 14.7, 518.7], 
+                [5000, 12.23, 500.8], 
+                [10000, 10.11, 483.0], 
+                [60000, 1.04, 390]]
+                
+        :param str data_sheetname:  Name of the data's tabbed window in Excel or OpenOffice
+        :type  data_sheetname: str or unicode
+        :param list list_of_rows: the list_of_rows will be placed at "A1" and should be: 
+            - row 1 is labels
+            - row 2 is units
+            - row 3 through N is float or string entries
+        :return: None
+        :rtype: None
+                
         """
         if (data_sheetname in self.data_table_objD) or (data_sheetname in self.plot_table_objD):
             raise  MySheetNameError('Duplicate sheet name submitted for new datasheet: "%s"'%data_sheetname)
@@ -394,7 +488,14 @@ class SpreadSheet(object):
         """
         Saves SpreadSheet to an ods file readable by Microsoft Excel or OpenOffice.
         
-        If the launch flag is set, will launch Excel or Openoffice using os.startfile
+        If the launch flag is set, will launch Excel or Openoffice using "os.startfile" 
+        or "open" or "xdg-open" depending on the platform.
+        
+        :keyword filename: Name of ods file to save (default=='my_chart.ods')
+        :type  filename: str or unicode
+        :keyword bool launch: If True, will launch Excel or OpenOffice (default==False)
+        :return: None
+        :rtype: None
         """
         
         if not filename.lower().endswith('.ods'):
