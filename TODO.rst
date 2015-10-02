@@ -3,6 +3,8 @@
 TODO
 ====
 
+* Create an Examples page
+
 * Run history_from_github_api.py
 
 * Beef up add_scatter doc strings for sphinx page.

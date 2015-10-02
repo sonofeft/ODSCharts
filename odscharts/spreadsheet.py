@@ -42,6 +42,7 @@ import zipfile
 import os
 import time
 from copy import deepcopy
+import  subprocess
 
 import sys
 if sys.version_info < (3,):
@@ -124,7 +125,13 @@ class SpreadSheet(object):
             print( '='*5, 'MUST SAVE FILE before launch_application will work.' , '='*5)
             print( '='*75 )
             return
-        os.startfile( self.filename )
+            
+        #os.startfile( self.filename )
+        if sys.platform == "win32":
+            os.startfile(self.filename)
+        else:
+            opener ="open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, self.filename])        
 
     def __init__(self):
         """Inits SpreadSheet with filename and blank content."""
@@ -427,7 +434,8 @@ class SpreadSheet(object):
         zipfileobj.close()
         
         if launch:
-            os.startfile( self.filename )
+            #os.startfile( self.filename )
+            self.launch_application()
         
 
 if __name__ == '__main__':
