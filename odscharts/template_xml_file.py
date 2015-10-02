@@ -43,7 +43,7 @@ class TemplateXML_File(object):
         self.xml_header = '' # Assume no header unless found at head of file
         match = header_re.match(xml_src)
         if match:
-            print( 'Found XML Header: ' + match.group(0) )
+            #print( 'Found XML Header: ' + match.group(0) )
             self.xml_header = match.group(0) # will need \n when serialized
 
         # ns entries like: ('urn:oasis:names:tc:opendocument:xmlns:table:1.0', u'table')

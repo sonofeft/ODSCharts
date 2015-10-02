@@ -14,6 +14,20 @@ class PlotTableDesc(object):
     """Holds a description of a scatter plot sheet.
     """
 
+    def get_next_color(self):
+        """
+        Return the next color in the list.
+        Increment counter for next color.
+        i_color and color_list are initialized in spreadsheet
+        """
+        i = self.i_color
+        self.i_color += 1
+        c = self.color_list[ i % len(self.color_list) ]
+        
+        #print( 'i_color = %i,  color = "%s"'%(i,c) )
+        
+        return c
+
     def __init__(self, plot_sheetname, num_chart, parent_obj):
         """Inits SpreadSheet with filename and blank content.
         

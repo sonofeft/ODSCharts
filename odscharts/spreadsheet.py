@@ -52,7 +52,7 @@ else:
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
-from object_content import build_chart_object_content, get_color
+from object_content import build_chart_object_content,  COLOR_LIST
 from template_xml_file import TemplateXML_File
 from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
@@ -111,6 +111,20 @@ class MySheetNameError(Exception):
 class SpreadSheet(object):
     """Creates OpenDocument Spreadsheets with charts for Microsoft Excel and OpenOffice
     """
+    
+    def launch_application(self):
+        """
+        Will launch Excel or Openoffice using os.startfile.
+        
+        ONLY WORKS IF file has been saved.
+        """
+        
+        if self.filename is None:
+            print( '='*75 )
+            print( '='*5, 'MUST SAVE FILE before launch_application will work.' , '='*5)
+            print( '='*75 )
+            return
+        os.startfile( self.filename )
 
     def __init__(self):
         """Inits SpreadSheet with filename and blank content."""
@@ -191,7 +205,7 @@ class SpreadSheet(object):
         auto_styles = chart_obj.find('office:automatic-styles')
         minmax_style,ipos_minmax_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                    attrib={'style:name':'%s'%axis_name}, nth_match=0)
-        print( 'FOUND:  ipos_minmax_style = ', ipos_minmax_style )
+        #print( 'FOUND:  ipos_minmax_style = ', ipos_minmax_style )
         
         chart_prop = minmax_style.find( NS('style:chart-properties', nsOD) )
         
@@ -286,6 +300,9 @@ class SpreadSheet(object):
         plot_desc.logy = logy
         plot_desc.log2y = log2y
         
+        plot_desc.i_color = 0 # index into color chart for next curve
+        plot_desc.color_list = COLOR_LIST[:] # make copy of default color list
+        
         def fill_out_list( yL, valL, default_val=None):
             if yL is None:
                 pass
@@ -300,25 +317,30 @@ class SpreadSheet(object):
         showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
         
         def fill_out_color_list(yL, cL, ioffset=0):
-            if type(cL) == type([1,2,3]):
-                while len(cL) < len(yL):
-                    cL.append( get_color( len(cL) + ioffset) )
-            #elif cL is None:
-            #    cL = [None for i in range(len(yL))]
-            else:
-                cL = [get_color(i+ioffset) for i in range(len(yL))]
-                #cL = [None for i in range(len(yL))]
-            return cL
-        
-        colorL = fill_out_color_list( ycolL, colorL)
-        color2L = fill_out_color_list( ycolL, color2L, ioffset=len(colorL))
+            """Change plot_desc.color_list to reflect colorL and color2L inputs"""
+            if type(cL) == type([1,2,3]) and  type(yL) == type([1,2,3]):
+                for i,c in enumerate( cL ):
+                    if c is not None:
+                        if i+ioffset < len( plot_desc.color_list ):
+                            plot_desc.color_list[i+ioffset] = c
+                        else:
+                            # If number of curves larger than color list, append colors
+                            plot_desc.color_list.append(c)
+                
+        # put any input colors into plot_desc.color_list
+        fill_out_color_list( ycolL, colorL)
+        # just in case there is no primary curve, catch len() exception
+        try:
+            fill_out_color_list( ycol2L, color2L, ioffset=len(ycolL))
+        except:
+            fill_out_color_list( ycol2L, color2L, ioffset=0)
         
         plot_desc.showMarkerL = showMarkerL
         plot_desc.showMarker2L = showMarker2L
         plot_desc.showUnits = showUnits
         
-        plot_desc.colorL = colorL
-        plot_desc.color2L = color2L
+        #plot_desc.colorL = colorL
+        #plot_desc.color2L = color2L
         
         plot_desc.labelL = labelL
         plot_desc.label2L = label2L
@@ -361,8 +383,12 @@ class SpreadSheet(object):
         self.ordered_dataL.append( table_desc )
             
 
-    def save(self, filename='my_chart.ods', debug=False):
-        """Saves SpreadSheet to an ods file readable by Microsoft Excel or OpenOffice"""
+    def save(self, filename='my_chart.ods', debug=False, launch=False):
+        """
+        Saves SpreadSheet to an ods file readable by Microsoft Excel or OpenOffice.
+        
+        If the launch flag is set, will launch Excel or Openoffice using os.startfile
+        """
         
         if not filename.lower().endswith('.ods'):
             filename = filename + '.ods'
@@ -397,6 +423,11 @@ class SpreadSheet(object):
         zipfile_insert( zipfileobj, 'content.xml', self.content_xml_obj.tostring())
         
         zipfile_insert( zipfileobj, 'styles.xml', self.styles_xml_obj.tostring())
+        
+        zipfileobj.close()
+        
+        if launch:
+            os.startfile( self.filename )
         
 
 if __name__ == '__main__':

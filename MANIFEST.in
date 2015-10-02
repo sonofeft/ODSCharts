@@ -9,6 +9,10 @@ recursive-include odscharts/tests *
 prune */__pycache__
 global-exclude *.py[co]
 
+recursive-exclude odscharts/tests *.ods
+recursive-exclude odscharts/examples *.ods
+recursive-exclude odscharts/backup *
+
 # for data files use something like:
 #  recursive-include odscharts/<data_directory> *
 

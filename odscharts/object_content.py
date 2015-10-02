@@ -56,11 +56,6 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     """When chart_obj is input, it still holds values from the original template"""
     
 
-    def node_print( n ):
-        for ch in n:
-            print( ch)
-        print( '='*55)
-
     chart = chart_obj.find('office:body/office:chart/chart:chart')
     
     nsOD = chart_obj.rev_nsOD
@@ -165,7 +160,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         # Find "Axs0"
         logx_style,ipos_logx_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                    attrib={'style:name':'Axs0'}, nth_match=0)
-        print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
+        #print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
         
         chart_prop = logx_style.find( NS('style:chart-properties', nsOD) )
         chart_prop.attrib = NS_attrib({ "chart:display-label":"true", "chart:link-data-style-to-source":"true",
@@ -175,7 +170,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         # Find "GMa0"
         logx_style,ipos_logx_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                    attrib={'style:name':'GMa0'}, nth_match=0)
-        print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
+        #print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
         stroke_style = logx_style.find( NS('style:graphic-properties', nsOD) )
         stroke_style.set( NS('draw:stroke', nsOD), 'solid' )
         del stroke_style.attrib[ NS('draw:stroke-dash', nsOD) ]
@@ -183,7 +178,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         # Find "G0S0"
         logx_style,ipos_logx_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                    attrib={'style:name':'G0S0'}, nth_match=0)
-        print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
+        #print( 'FOUND:  ipos_logx_style = ', ipos_logx_style )
         new_elem_1 = ET.SubElement(auto_styles,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}style", 
             attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}family', 'chart'), 
             ('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'GMi0')]))
@@ -204,7 +199,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         
         
     
-    if plot_desc.ycolL and len(plot_desc.ycolL) > 1:
+    if plot_desc.ycolL and len(plot_desc.ycolL) >=1:
         auto_styles = chart_obj.find('office:automatic-styles')
         autostyleL = auto_styles.findall('style:style', nsOD)
         ref_series_style = None
@@ -216,7 +211,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
                 istyle_loc = iloc + 2
                 
                 elem = ref_series_style.find("style:graphic-properties", nsOD)
-                c = plot_desc.colorL[0]  # get_color( 0, inp_color=plot_desc.colorL[0] )
+                c = plot_desc.get_next_color()
                 if not c is None:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c)                
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
@@ -229,12 +224,12 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         
         # Look for logarithmic scale on primary y
         if plot_desc.logy:
-            print( 'Got log y' )
+            #print( 'Got log y' )
         
             # Find "Axs1"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                        attrib={'style:name':'Axs1'}, nth_match=0)
-            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            #print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
             chart_prop = logy_style.find( NS('style:chart-properties', nsOD) )
             
             chart_prop.set( NS("chart:logarithmic", nsOD), "true" )
@@ -245,13 +240,13 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
             # Find "GMa1"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                        attrib={'style:name':'GMa1'}, nth_match=0)
-            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            #print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
             logy_style.set( NS("draw:stroke", nsOD), "dash" )
         
             # Find "G0S1"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                        attrib={'style:name':'G0S1'}, nth_match=0)
-            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            #print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
             
             new_elem_1 = ET.SubElement(auto_styles,"{urn:oasis:names:tc:opendocument:xmlns:style:1.0}style", 
                 attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}family', 'chart'), 
@@ -280,7 +275,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
             new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G0S%i'%nG0S )
 
             elem = new_style.find("style:graphic-properties", nsOD)
-            c = plot_desc.colorL[nG0S]  #get_color( nG0S, inp_color=plot_desc.colorL[nG0S] )
+            c = plot_desc.get_next_color()
             if not c is None:
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
@@ -302,7 +297,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
             col_letter = get_col_letters_from_number( ycol )
             sht_name = plot_desc.data_sheetname
             val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,table_desc.nrows)
-            print( 'val_cell_range =',val_cell_range)
+            #print( 'val_cell_range =',val_cell_range)
     
             lab_cell = '%s.$%s$1'%(sht_name, col_letter)
             new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
@@ -317,15 +312,15 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
     # Look for secondary y axis 
     if plot_desc.ycol2L:
         series_label_cell_address = y2_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
-        print( 'Y2 series_label_cell_address =',series_label_cell_address)
+        #print( 'Y2 series_label_cell_address =',series_label_cell_address)
 
         series_value_cell_range = y2_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address')
-        print( 'Y2 series_value_cell_range =',series_value_cell_range)
+        #print( 'Y2 series_value_cell_range =',series_value_cell_range)
         ycol = plot_desc.ycol2L[0]
         col_letter = get_col_letters_from_number( ycol )
         sht_name = plot_desc.data_sheetname
         val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,table_desc.nrows)
-        print( 'Y2 val_cell_range =',val_cell_range)
+        #print( 'Y2 val_cell_range =',val_cell_range)
         
         lab_cell = '%s.$%s$1'%(sht_name, col_letter)
         y2_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
@@ -346,12 +341,12 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
         
         # Look for logarithmic scale on primary y
         if plot_desc.log2y:
-            print( 'Got log on secondary y' )
+            #print( 'Got log on secondary y' )
         
             # Find "Axs2"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
                                        attrib={'style:name':'Axs2'}, nth_match=0)
-            print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
+            #print( 'FOUND:  ipos_logy_style = ', ipos_logy_style )
             chart_prop = logy_style.find( NS('style:chart-properties', nsOD) )
             
             chart_prop.set( NS("chart:logarithmic", nsOD), "true" )
@@ -395,7 +390,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
                     istyle_loc = iloc + 2
                     
                     elem = ref_series_style.find("style:graphic-properties", nsOD)
-                    c = plot_desc.color2L[0]  # get_color( 0, inp_color=plot_desc.color2L[0] )
+                    c = plot_desc.get_next_color()
                     if not c is None:
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c)                
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
@@ -415,14 +410,14 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
                 new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G1S%i'%nG1S )
 
                 elem = new_style.find("style:graphic-properties", nsOD)
-                c = plot_desc.color2L[nG1S]  #get_color( nG1S, inp_color=plot_desc.color2L[nG1S] )
+                c = plot_desc.get_next_color()
                 if not c is None:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
 
 
                 elem = new_style.find("style:chart-properties", nsOD)
-                if plot_desc.showMarkerL[nG1S]:  # showMarkerL is guaranteed to have same dimension as ycol2L
+                if plot_desc.showMarker2L[nG1S]:  # showMarkerL is guaranteed to have same dimension as ycol2L
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
                 else:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
@@ -437,7 +432,7 @@ def build_chart_object_content( chart_obj, plot_desc, table_desc ):
                 col_letter = get_col_letters_from_number( ycol )
                 sht_name = plot_desc.data_sheetname
                 val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,table_desc.nrows)
-                print( 'val_cell_range =',val_cell_range)
+                #print( 'val_cell_range =',val_cell_range)
         
                 lab_cell = '%s.$%s$1'%(sht_name, col_letter)
                 new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)

@@ -61,3 +61,6 @@ docs/_build/
 target/
 
 
+odscharts/examples/altitude_vs_tp.ods
+odscharts/tests/alt.ods
+odscharts/examples/trig_plot.ods
