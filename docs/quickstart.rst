@@ -57,7 +57,7 @@ The columns are identified with a one-based index such that the first column is 
 
 The output ods file is saved as ``trig_plot.ods`` (Note the ``.ods`` is added automatically).
 
-When saving, the flag ``launch=True`` will cause either Excel or Open Office to launch with the named ods file, depending on which application is linked to ``*.ods`` files.
+When saving, the flag ``launch=True`` will cause either Excel or Open Office to launch with the named ods file, depending on which application is linked to ``*.ods`` files. Screen shots of both Excel and OpenOffice are shown below the code.
 
 .. code:: python
 
@@ -85,6 +85,11 @@ When saving, the flag ``launch=True`` will cause either Excel or Open Office to 
                               
     mySprSht.save( filename='trig_plot', launch=True)
 
+
+.. image:: ./_static/trig_funcs_excel.png
+    :width: 40%
+.. image:: ./_static/trig_funcs_oo.png
+    :width: 50%
 
 .. _internal_pip_error:
 
