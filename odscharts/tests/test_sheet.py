@@ -89,7 +89,7 @@ class MyTest(unittest.TestCase):
         self.mySprSht.setYrange(-100, 700)
         #self.mySprSht.add_scatter( 'Alt_Plot2', 'Alt_Data')
         #self.mySprSht.add_scatter( 'Alt_Plot3', 'Alt_Data')
-        self.mySprSht.save( filename=os.path.join(here,'alt'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt') )
         
 
     def test_save_secondary_y(self):
@@ -107,7 +107,7 @@ class MyTest(unittest.TestCase):
                                   labelL=None, label2L=None)
         
         self.mySprSht.setY2range(50, 550)        
-        self.mySprSht.save( filename=os.path.join(here,'alt_y2'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_y2') )
         
 
     def test_logx_save(self):
@@ -124,7 +124,7 @@ class MyTest(unittest.TestCase):
                                   colorL=None,
                                   labelL=None, label2L=None)
                                   
-        self.mySprSht.save( filename=os.path.join(here,'alt_logx'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_logx') )
 
 
     def test_logy_save(self):
@@ -141,7 +141,7 @@ class MyTest(unittest.TestCase):
                                   colorL=None,
                                   labelL=None, label2L=None)
                                   
-        self.mySprSht.save( filename=os.path.join(here,'alt_logy'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_logy') )
 
 
     def test_log2y_save(self):
@@ -158,7 +158,7 @@ class MyTest(unittest.TestCase):
                                   colorL=None,
                                   labelL=None, label2L=None)
                                   
-        self.mySprSht.save( filename=os.path.join(here,'alt_log2y'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_log2y') )
 
     def test_all_log_save(self):
         """Check that save operates for a second y axis"""
@@ -174,7 +174,7 @@ class MyTest(unittest.TestCase):
                                   colorL=None,
                                   labelL=None, label2L=None)
                                   
-        self.mySprSht.save( filename=os.path.join(here,'alt_all_log'), debug=False)
+        self.mySprSht.save( filename=os.path.join(here,'alt_all_log') )
         
 
 

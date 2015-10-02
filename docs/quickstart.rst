@@ -41,20 +41,49 @@ This will execute the local ``setup.py`` file and insure that the pip-specific c
 Running ODSCharts
 -----------------
 
-After installing with ``pip``, there will be a launch command line program called **odscharts** or, on Windows, **odscharts.exe**. From a terminal or command prompt window simply type::
+ODSCharts is normally run from a python script. For example, the script below plots sine and cosine vs angle.
 
-    odscharts
+The ``list_of_rows`` input variable holds the various curve labels, units and data.
 
-and ODSCharts will start. If not, then there may be an issue with your system path.
-The path for the odscharts executable might be something like::
+    * Row 1 holds all of the labels of each column
+    * Row 2 holds the units for each column (use '' for no units)
+    * Rows 3 through N hold data values.
 
-    /usr/local/bin/odscharts             (if installed with sudo pip install -e .)
-         or 
-    /home/<user>/.local/bin/odscharts    (if installed with pip install -e .)
-         or 
-    C:\Python27\Scripts\odscharts.exe    (on Windows)
+A data sheet named "Trig_Data" is created by the ``add_sheet`` command.
 
-Make sure your system path includes the above path to **odscharts**.
+A scatter plot named "Trig_Plot" is created by the ``add_scatter`` command. Note that it identifies "Trig_Data" as the source of the data for the plot.
+
+The columns are identified with a one-based index such that the first column is column number 1. Note that the input ``xcol=1`` idenifies column 1 as the ``X Axis``. The curves are identified as columns 2 and 3 by the input ``ycolL=[2,3]``.
+
+The output ods file is saved as ``trig_plot.ods`` (Note the ``.ods`` is added automatically).
+
+When saving, the flag ``launch=True`` will cause either Excel or Open Office to launch with the named ods file, depending on which application is linked to ``*.ods`` files.
+
+.. code:: python
+
+
+    from math import *
+    from odscharts.spreadsheet import SpreadSheet
+
+    mySprSht = SpreadSheet()
+
+    list_of_rows = [['Angle','Sine','Cosine'], ['deg','','']]
+    for iang in range( 3601 ):
+        ang_deg = float(iang) / 10.0
+        ang = radians(ang_deg)
+        
+        list_of_rows.append( [ang_deg, sin(ang), cos(ang)] )
+
+    mySprSht.add_sheet('Trig_Data', list_of_rows)
+
+    mySprSht.add_scatter( 'Trig_Plot', 'Trig_Data',
+                              title='Trig Functions', 
+                              xlabel='Angle', 
+                              ylabel='Trig Function', 
+                              xcol=1,
+                              ycolL=[2,3], showMarkerL=[1,0])
+                              
+    mySprSht.save( filename='trig_plot', launch=True)
 
 
 .. _internal_pip_error:

@@ -383,7 +383,7 @@ class SpreadSheet(object):
         self.ordered_dataL.append( table_desc )
             
 
-    def save(self, filename='my_chart.ods', debug=False, launch=False):
+    def save(self, filename='my_chart.ods', launch=False):
         """
         Saves SpreadSheet to an ods file readable by Microsoft Excel or OpenOffice.
         
@@ -432,4 +432,4 @@ class SpreadSheet(object):
 
 if __name__ == '__main__':
     C = SpreadSheet()
-    C.save( filename='performance', debug=False)
+    C.save( filename='performance')

@@ -3,6 +3,8 @@
 TODO
 ====
 
+* Beef up add_scatter doc strings for sphinx page.
+
 * Enable labelL and label2L inputs
 
 * Remove __pycache__ from distro
