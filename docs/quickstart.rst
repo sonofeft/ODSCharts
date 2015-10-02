@@ -85,6 +85,7 @@ When saving, the flag ``launch=True`` will cause either Excel or Open Office to 
                               
     mySprSht.save( filename='trig_plot', launch=True)
 
+`Click images to see full size`
 
 .. image:: ./_static/trig_funcs_excel.png
     :width: 40%

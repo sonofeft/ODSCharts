@@ -40,6 +40,8 @@ The format is a very narrow subset of full spreadsheet support.
             - Each x axis is a column from a table
 
 
+`Click images to see full size`
+
 .. image:: ./_static/alt_vs_tp_excel.png
     :width: 40%
 .. image:: ./_static/alt_vs_tp_oo.png
