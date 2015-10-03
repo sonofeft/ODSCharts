@@ -73,7 +73,8 @@ if 1:
 
 mySprSht.add_scatter( 'Combo2_Plot', 'Aussie_Data',
                           title='Australian and USA BMI', xlabel='Year', 
-                          ylabel='Percent of Population',
+                          ylabel='Percent of Aussie Population',
+                          y2label='Percent of USA Population',
                           xcol=1,
                           ycolL=[2,3,4])
 mySprSht.add_curve('Combo2_Plot', 'USA_Data', 

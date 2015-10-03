@@ -21,133 +21,73 @@ def get_col_letters_from_number(num):
         num = (num - 1) // 26
     return ''.join(reversed(letters))
 
+N_LABELS = 0
+N_UNITS = 1
 
-def add_curves_to_chart_object(chart_obj, plotSheetObj, dataTableObj):
+def get_all_units_on_chart( plotSheetObj ):
     
-
-    nsOD = chart_obj.rev_nsOD
-    iBeg = plotSheetObj.i_color # i_color tracks curves as they are added
-    auto_styles = chart_obj.find('office:automatic-styles')
+    doc = plotSheetObj.document
     
-    istyle_loc = plotSheetObj.istyle_loc
-    y_series = plotSheetObj.y_series
-    chart = chart_obj.find('office:body/office:chart/chart:chart')
-    plot_area = chart.find('chart:plot-area', nsOD)
-
-    xcol = plotSheetObj.xcol
-    xcol_letter = get_col_letters_from_number( xcol )
-    sht_name = plotSheetObj.data_sheetname    
-    xval_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,xcol_letter,xcol_letter,dataTableObj.nrows)
-
-    # ============= Primary Y Axis ====================================
-    if plotSheetObj.ref_series_style is not None:
-        
-        nG0S = iBeg
-        if plotSheetObj.ycolL is not None:
-            for ycol in plotSheetObj.ycolL:
-                print('Adding ycol nG0S=',nG0S)
-                new_style = deepcopy( plotSheetObj.ref_series_style )
-                new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G0S%i'%nG0S )
-
-                elem = new_style.find("style:graphic-properties", nsOD)
-                c = plotSheetObj.get_next_color()
-                if not c is None:
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
-
-
-                elem = new_style.find("style:chart-properties", nsOD)
-                if plotSheetObj.showMarkerL[nG0S-iBeg]:  # showMarkerL is guaranteed to have same dimension as ycolL
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
-                else:
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
-                
-                
-                auto_styles.insert(istyle_loc, new_style )
-                istyle_loc += 1
-                
-                new_chart_series = deepcopy( y_series )
-                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name','G0S%i'%nG0S)
-
-
-                chart_domain = new_chart_series.find('chart:domain', nsOD)
-                chart_data_point = new_chart_series.find('chart:data-point', nsOD)
-                chart_domain.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
-
-
-                col_letter = get_col_letters_from_number( ycol )
-                sht_name = plotSheetObj.data_sheetname
-                val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,dataTableObj.nrows)
-                #print( 'val_cell_range =',val_cell_range)
-        
-                lab_cell = '%s.$%s$1'%(sht_name, col_letter)
-                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
-                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
-                
-                ipos = len(plot_area)-1
-                plot_area.insert(ipos, new_chart_series )
-
-                nG0S += 1
+    xUnitsL = []
+    yUnitsL = []
+    y2UnitsL = []
     
-    # ======================== Secondary Y Axis ====================================
-    if plotSheetObj.ref_series_style2 is not None:
+    # Get units for x and primary y
+    for i,xcol in enumerate( plotSheetObj.xcolL ):
+        data_sheetname = plotSheetObj.ycolDataSheetNameL[i]
+        dataTableObj = doc.data_table_objD[ data_sheetname ]
+        xcol_units = dataTableObj.list_of_rows[N_UNITS][xcol-1]
+        if xcol_units:
+            xUnitsL.append( xcol_units )
             
-        nG1S = 1
-        if plotSheetObj.ycol2L is not None:
-            for ycol in plotSheetObj.ycol2L[1:]:
-                new_style = deepcopy( ref_series_style )
-                new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G1S%i'%nG1S )
-
-                elem = new_style.find("style:graphic-properties", nsOD)
-                c = plotSheetObj.get_next_color()
-                if not c is None:
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
-
-
-                elem = new_style.find("style:chart-properties", nsOD)
-                if plotSheetObj.showMarker2L[nG1S]:  # showMarkerL is guaranteed to have same dimension as ycol2L
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
-                else:
-                    elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
-                
-                
-                auto_styles.insert(istyle_loc, new_style )
-                istyle_loc += 1
-                
-                new_chart_series = deepcopy( y2_series )
-                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name','G1S%i'%nG1S)
-                
-                col_letter = get_col_letters_from_number( ycol )
-                sht_name = plotSheetObj.data_sheetname
-                val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,dataTableObj.nrows)
-                #print( 'val_cell_range =',val_cell_range)
-        
-                lab_cell = '%s.$%s$1'%(sht_name, col_letter)
-                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
-                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
-
-                ipos = len(plot_area)-1
-                plot_area.insert(ipos, new_chart_series )
-
-                nG1S += 1
+        ycol = plotSheetObj.ycolL[i]
+        ycol_units = dataTableObj.list_of_rows[N_UNITS][ycol-1]
+        if ycol_units:
+            yUnitsL.append( ycol_units )
     
-    plotSheetObj.istyle_loc = istyle_loc
+    # get units for x and secondary y
+    for i,xcol in enumerate( plotSheetObj.xcol2L ):
+        data_sheetname = plotSheetObj.ycol2_DataSheetNameL[i]
+        dataTableObj = doc.data_table_objD[ data_sheetname ]
+        xcol_units = dataTableObj.list_of_rows[N_UNITS][xcol-1]
+        if xcol_units:
+            xUnitsL.append( xcol_units )
+            
+        ycol2 = plotSheetObj.ycol2L[i]
+        ycol2_units = dataTableObj.list_of_rows[N_UNITS][ycol2-1]
+        if ycol2_units:
+            y2UnitsL.append( ycol2_units )
     
+    xUnitsL = sorted( list( set(xUnitsL) ) )
+    yUnitsL = sorted( list( set(yUnitsL) ) )
+    y2UnitsL = sorted( list( set(y2UnitsL) ) )
         
+    if xUnitsL:
+        xUnitsStr = ' (%s)'%', '.join(xUnitsL)
+    else:
+        xUnitsStr = ''
+        
+    if yUnitsL:
+        yUnitsStr = ' (%s)'%', '.join(yUnitsL)
+    else:
+        yUnitsStr = ''
+        
+    if y2UnitsL:
+        y2UnitsStr = ' (%s)'%', '.join(y2UnitsL)
+    else:
+        y2UnitsStr = ''
 
-def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
+    return xUnitsStr, yUnitsStr, y2UnitsStr
+
+def build_chart_object_content( chart_obj, plotSheetObj ):
     """When chart_obj is input, it still holds values from the original template"""
     
 
     chart = chart_obj.find('office:body/office:chart/chart:chart')
     
     nsOD = chart_obj.rev_nsOD
-    
-    # May need to save ref_series_style for primary and secondary 
-    #    if add_curves_to_chart_object is used
-    plotSheetObj.ref_series_style = None
-    plotSheetObj.ref_series_style2 = None
+    doc = plotSheetObj.document
+
 
     title = chart.find('chart:title/text:p', nsOD)
     #print( 'title.text = ',title.text)
@@ -180,27 +120,26 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
     xtitle = xaxis.find('chart:title/text:p', nsOD)
     ytitle = yaxis.find('chart:title/text:p', nsOD)
     
-    xtitle.text = plotSheetObj.xlabel
-    if plotSheetObj.showUnits:
-        xcol_units = dataTableObj.list_of_rows[1][plotSheetObj.xcol-1]
-        xtitle.text = plotSheetObj.xlabel + ' (%s)'%xcol_units
+    xUnitsStr, yUnitsStr, y2UnitsStr = get_all_units_on_chart( plotSheetObj )
     
-    ytitle.text = plotSheetObj.ylabel
+    
+    if plotSheetObj.showUnits:
+        xtitle.text = plotSheetObj.xlabel + xUnitsStr
+    else:
+        xtitle.text = plotSheetObj.xlabel
+    
     if plotSheetObj.showUnits and plotSheetObj.ycolL:
-        unitSet = set( [dataTableObj.list_of_rows[1][ycol-1] for ycol in plotSheetObj.ycolL] )
-        unitL = sorted( list(unitSet) )
-        ytitle.text = plotSheetObj.ylabel + ' (%s)'%( ', '.join(unitL), )
+        ytitle.text = plotSheetObj.ylabel + yUnitsStr
+    else:
+        ytitle.text = plotSheetObj.ylabel
     
     # Look for secondary y axis 
     if plotSheetObj.ycol2L:
-        #x2title = x2axis.find('chart:title/text:p', nsOD)
         y2title = y2axis.find('chart:title/text:p', nsOD)
-        #x2title.text = plotSheetObj.xlabel # NOTE: I only allow one X axis label
-        y2title.text = plotSheetObj.y2label
         if plotSheetObj.showUnits:
-            unitSet = set( [dataTableObj.list_of_rows[1][ycol2-1] for ycol2 in plotSheetObj.ycol2L] )
-            unitL = sorted( list(unitSet) )
-            y2title.text = plotSheetObj.y2label + ' (%s)'%( ', '.join(unitL), )
+            y2title.text = plotSheetObj.y2label + y2UnitsStr
+        else:
+            y2title.text = plotSheetObj.y2label
     
     
     chart_seriesL = plot_area.findall('chart:series', nsOD)
@@ -222,7 +161,8 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
     #print( 'series_value_cell_range =',series_value_cell_range)
     ycol = plotSheetObj.ycolL[0]
     col_letter = get_col_letters_from_number( ycol )
-    sht_name = plotSheetObj.data_sheetname
+    sht_name = plotSheetObj.ycolDataSheetNameL[0]
+    dataTableObj = doc.data_table_objD[ sht_name ]
     val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,dataTableObj.nrows)
     #print( 'val_cell_range =',val_cell_range)
     
@@ -235,7 +175,7 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
     #print( chart_domain.items())
     #print( chart_data_point.items())
 
-    xcol = plotSheetObj.xcol
+    xcol = plotSheetObj.xcolL[0]
     xcol_letter = get_col_letters_from_number( xcol )
     xval_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,xcol_letter,xcol_letter,dataTableObj.nrows)
     chart_domain.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
@@ -310,7 +250,6 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
                 else:    
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
-        plotSheetObj.ref_series_style = ref_series_style
         
         # Look for logarithmic scale on primary y
         if plotSheetObj.logy:
@@ -385,13 +324,21 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
             new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name','G0S%i'%nG0S)
             
             col_letter = get_col_letters_from_number( ycol )
-            sht_name = plotSheetObj.data_sheetname
+            sht_name = plotSheetObj.ycolDataSheetNameL[nG0S]
+            dataTableObj = doc.data_table_objD[ sht_name ]
             val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,dataTableObj.nrows)
             #print( 'val_cell_range =',val_cell_range)
     
             lab_cell = '%s.$%s$1'%(sht_name, col_letter)
             new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
             new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
+
+
+            xcol = plotSheetObj.xcolL[nG0S]
+            xcol_letter = get_col_letters_from_number( xcol )
+            xval_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,xcol_letter,xcol_letter,dataTableObj.nrows)
+            new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
+
 
             ipos = len(plot_area)-1
             plot_area.insert(ipos, new_chart_series )
@@ -400,7 +347,7 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
 
     # =============== Secondary Y Axis =========================
     # Look for secondary y axis 
-    if plotSheetObj.ycol2L:
+    if (plotSheetObj.ycol2L is not None) and (len(plotSheetObj.ycol2L)>0):
         series_label_cell_address = y2_series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address')
         #print( 'Y2 series_label_cell_address =',series_label_cell_address)
 
@@ -408,7 +355,8 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
         #print( 'Y2 series_value_cell_range =',series_value_cell_range)
         ycol = plotSheetObj.ycol2L[0]
         col_letter = get_col_letters_from_number( ycol )
-        sht_name = plotSheetObj.data_sheetname
+        sht_name = plotSheetObj.ycol2_DataSheetNameL[0]
+        dataTableObj = doc.data_table_objD[ sht_name ]
         val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,dataTableObj.nrows)
         #print( 'Y2 val_cell_range =',val_cell_range)
         
@@ -421,7 +369,7 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
         #print( chart_domain.items())
         #print( chart_data_point.items())
 
-        xcol = plotSheetObj.xcol
+        xcol = plotSheetObj.xcol2L[0]
         xcol_letter = get_col_letters_from_number( xcol )
         xval_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,xcol_letter,xcol_letter,dataTableObj.nrows)
         chart_domain.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
@@ -431,7 +379,7 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
         
         # Look for logarithmic scale on primary y
         if plotSheetObj.log2y:
-            #print( 'Got log on secondary y' )
+            print( 'Got log on secondary y' )
         
             # Find "Axs2"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD, 
@@ -521,13 +469,21 @@ def build_chart_object_content( chart_obj, plotSheetObj, dataTableObj ):
                 new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name','G1S%i'%nG1S)
                 
                 col_letter = get_col_letters_from_number( ycol )
-                sht_name = plotSheetObj.data_sheetname
+                sht_name = plotSheetObj.ycol2_DataSheetNameL[nG1S]
+                dataTableObj = doc.data_table_objD[ sht_name ]
                 val_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,col_letter,col_letter,dataTableObj.nrows)
                 #print( 'val_cell_range =',val_cell_range)
         
                 lab_cell = '%s.$%s$1'%(sht_name, col_letter)
                 new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}label-cell-address',lab_cell)
                 new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}values-cell-range-address',val_cell_range)
+
+
+                xcol = plotSheetObj.xcol2L[nG1S]
+                xcol_letter = get_col_letters_from_number( xcol )
+                xval_cell_range = '%s.$%s$3:.$%s$%i'%(sht_name,xcol_letter,xcol_letter,dataTableObj.nrows)
+                new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
+
 
                 ipos = len(plot_area)-1
                 plot_area.insert(ipos, new_chart_series )

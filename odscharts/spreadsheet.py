@@ -53,7 +53,7 @@ else:
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
-from object_content import build_chart_object_content, add_curves_to_chart_object
+from object_content import build_chart_object_content
 
 from color_utils import BIG_COLOR_HEXSTR_LIST,  EXCEL_COLOR_LIST
 from template_xml_file import TemplateXML_File
@@ -142,10 +142,14 @@ class SpreadSheet(object):
         """Inits SpreadSheet with filename and blank content."""
         
         self.filename = None
-        self.data_table_objD = {} # dict of data desc objects (DataTableDesc)
-        self.plot_sheet_objD = {} # dict of plot desc objects (PlotTableDesc)
+        self.data_table_objD = {} # dict of data desc objects (DataTableDesc), index=data_sheetname, value=Obj
+        self.plot_sheet_objD = {} # dict of plot desc objects (PlotTableDesc), index=plot_sheetname, value=Obj
         self.ordered_plotL = [] # list of plot names in insertion order 
         self.ordered_dataL = [] # list of data sheet names in insertion order
+        
+        self.plot_xMinMaxD = {} # index=plot sheet name, values=(xmin,xmax). can be (None,None)
+        self.plot_yMinMaxD = {} # index=plot sheet name, values=(ymin,ymax). can be (None,None)
+        self.plot_y2MinMaxD = {} # index=plot sheet name, values=(y2min,y2max). can be (None,None)
         
         self.content_xml_obj = load_template_xml_from_ods( 'alt_chart.ods', 'content.xml' )
         self.meta_xml_obj = load_template_xml_from_ods( 'alt_chart.ods', 'meta.xml' )
@@ -232,6 +236,20 @@ class SpreadSheet(object):
             chart_prop.set( NS('chart:maximum', nsOD), '%g'%max_val )
             self.add_tag( NS('chart:maximum', nsOD), chart_obj )
             
+    def setAxisRanges(self, plot_sheetname ):
+
+        if plot_sheetname in self.plot_xMinMaxD:
+            xmin, xmax = self.plot_xMinMaxD[ plot_sheetname ]
+            self.setAxisRange( 'Axs0' ,min_val=xmin, max_val=xmax, plot_sheetname=plot_sheetname)
+
+        if plot_sheetname in self.plot_yMinMaxD:
+            ymin, ymax = self.plot_yMinMaxD[ plot_sheetname ]
+            self.setAxisRange( 'Axs1' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+
+        if plot_sheetname in self.plot_y2MinMaxD:
+            ymin, ymax = self.plot_y2MinMaxD[ plot_sheetname ]
+            self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+        
 
     def setXrange(self, xmin=None, xmax=None, plot_sheetname=None):
         """
@@ -251,7 +269,15 @@ class SpreadSheet(object):
         :rtype: None
             
         """
-        self.setAxisRange( 'Axs0' ,min_val=xmin, max_val=xmax, plot_sheetname=plot_sheetname)
+        #self.setAxisRange( 'Axs0' ,min_val=xmin, max_val=xmax, plot_sheetname=plot_sheetname)
+        
+        
+        # use latest plot_sheetname if no name is provided
+        if plot_sheetname is None:
+            plot_sheetname = self.ordered_plotL[-1]
+        
+        self.plot_xMinMaxD[plot_sheetname] = (xmin, xmax)
+        
 
     def setYrange(self, ymin=None, ymax=None, plot_sheetname=None):
         """
@@ -270,7 +296,14 @@ class SpreadSheet(object):
         :return: None
         :rtype: None
         """
-        self.setAxisRange( 'Axs1' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+        #self.setAxisRange( 'Axs1' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+                
+        # use latest plot_sheetname if no name is provided
+        if plot_sheetname is None:
+            plot_sheetname = self.ordered_plotL[-1]
+        
+        self.plot_yMinMaxD[plot_sheetname] = (ymin, ymax)
+        
 
     def setY2range(self, ymin=None, ymax=None, plot_sheetname=None):
         """
@@ -289,12 +322,20 @@ class SpreadSheet(object):
         :return: None
         :rtype: None
         """
-        self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+        #self.setAxisRange( 'Axs2' ,min_val=ymin, max_val=ymax, plot_sheetname=plot_sheetname)
+                
+        # use latest plot_sheetname if no name is provided
+        if plot_sheetname is None:
+            plot_sheetname = self.ordered_plotL[-1]
+        
+        self.plot_y2MinMaxD[plot_sheetname] = (ymin, ymax)
+        
 
     def add_curve(self, plot_sheetname, data_sheetname, xcol=1,
                     ycolL=None, ycol2L=None,
                     showMarkerL=None, showMarker2L=None,
-                    colorL=None, color2L=None):
+                    colorL=None, color2L=None,
+                    labelL=None, label2L=None):
         """
         Not Yet Implemented
         """
@@ -316,35 +357,17 @@ class SpreadSheet(object):
             raise  MySheetNameError('Named data sheet does NOT exist: "%s"'%data_sheetname)
         
         # Make of copy of original plotSheetObj
-        old_plotSheetObj = self.plot_sheet_objD[plot_sheetname]
-        plotSheetObj = copy( old_plotSheetObj )
+        plotSheetObj = self.plot_sheet_objD[plot_sheetname]
+
         
-        plotSheetObj.plot_sheetname = plot_sheetname
-        plotSheetObj.data_sheetname = data_sheetname
-        plotSheetObj.xcol = xcol
-        plotSheetObj.ycolL = ycolL
-        plotSheetObj.ycol2L = ycol2L
+        plotSheetObj.add_to_primary_y(data_sheetname, xcol, ycolL, 
+                                      showMarkerL=showMarkerL, colorL=colorL, 
+                                      labelL=labelL)
         
+        plotSheetObj.add_to_secondary_y( data_sheetname, xcol, ycol2L, 
+                                         showMarker2L=showMarker2L, color2L=color2L, 
+                                         label2L=label2L)
         
-        def fill_out_list( yL, valL, default_val=None):
-            if yL is None:
-                pass
-            elif valL is None:
-                valL = [default_val for y in yL]
-            else:
-                while len(valL) < len(yL):
-                    valL.append( valL[-1] )
-            return valL
-            
-        showMarkerL = fill_out_list( ycolL, showMarkerL, True )
-        showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
-        plotSheetObj.showMarkerL = showMarkerL
-        plotSheetObj.showMarker2L = showMarker2L
-        
-        chart_obj = plotSheetObj.chart_obj
-        dataTableObj = self.data_table_objD[data_sheetname]
-        
-        add_curves_to_chart_object(chart_obj, plotSheetObj, dataTableObj)
 
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
@@ -423,7 +446,7 @@ class SpreadSheet(object):
         add_ObjectN( num_chart, self.metainf_manifest_xml_obj)
         
         plotSheetObj = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj)
-        
+        plotSheetObj.document = self
         
         self.spreadsheet_obj.insert(TABLE_INSERT_POINT, plotSheetObj.xmlSheetObj)
         
@@ -433,6 +456,14 @@ class SpreadSheet(object):
         self.plot_sheet_objD[plot_sheetname] = plotSheetObj
         self.ordered_plotL.append( plot_sheetname )
         
+        plotSheetObj.add_to_primary_y(data_sheetname, xcol, ycolL, 
+                                      showMarkerL=showMarkerL, colorL=colorL, 
+                                      labelL=labelL)
+        
+        plotSheetObj.add_to_secondary_y( data_sheetname, xcol, ycol2L, 
+                                         showMarker2L=showMarker2L, color2L=color2L, 
+                                         label2L=label2L)
+        
         # Start making the chart object that goes onto the plot sheet 
         #  Assign plot parameters to PlotTableDesc object
         plotSheetObj.plot_sheetname = plot_sheetname
@@ -441,7 +472,6 @@ class SpreadSheet(object):
         plotSheetObj.xlabel = xlabel
         plotSheetObj.ylabel = ylabel
         plotSheetObj.y2label = y2label
-        plotSheetObj.xcol = xcol
         plotSheetObj.ycolL = ycolL
         plotSheetObj.ycol2L = ycol2L
         
@@ -449,68 +479,13 @@ class SpreadSheet(object):
         plotSheetObj.logy = logy
         plotSheetObj.log2y = log2y
         
+        
         plotSheetObj.i_color = 0 # index into color chart for next curve
         if excel_colors:
             plotSheetObj.color_list = EXCEL_COLOR_LIST[:] # make copy of default color list
         else:
             plotSheetObj.color_list = BIG_COLOR_HEXSTR_LIST[:]
         
-        def fill_out_list( yL, valL, default_val=None):
-            if yL is None:
-                pass
-            elif valL is None:
-                valL = [default_val for y in yL]
-            else:
-                while len(valL) < len(yL):
-                    valL.append( valL[-1] )
-            return valL
-            
-        showMarkerL = fill_out_list( ycolL, showMarkerL, True )
-        showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
-        
-        def fill_out_color_list(yL, cL, ioffset=0):
-            """Change plotSheetObj.color_list to reflect colorL and color2L inputs"""
-            if type(cL) == type([1,2,3]) and  type(yL) == type([1,2,3]):
-                for i,c in enumerate( cL ):
-                    if c is not None:
-                        c = '%s'%c # make sure it's a string
-                        if c.startswith('#') and len(c)==7:
-                            if i+ioffset < len( plotSheetObj.color_list ):
-                                plotSheetObj.color_list[i+ioffset] = c
-                            else:
-                                # If number of curves larger than color list, append colors
-                                plotSheetObj.color_list.append(c)
-                        else:
-                            print('WARNING... illegal color string input "%s"'%c)
-                
-        # put any input colors into plotSheetObj.color_list
-        fill_out_color_list( ycolL, colorL)
-        # just in case there is no primary curve, catch len() exception
-        try:
-            fill_out_color_list( ycol2L, color2L, ioffset=len(ycolL))
-        except:
-            fill_out_color_list( ycol2L, color2L, ioffset=0)
-        
-        plotSheetObj.showMarkerL = showMarkerL
-        plotSheetObj.showMarker2L = showMarker2L
-        plotSheetObj.showUnits = showUnits
-        
-        #plotSheetObj.colorL = colorL
-        #plotSheetObj.color2L = color2L
-        
-        plotSheetObj.labelL = labelL
-        plotSheetObj.label2L = label2L
-        
-        # assigns attribute chart_obj to plotSheetObj
-        dataTableObj = self.data_table_objD[data_sheetname]
-        
-        # create a new chart object
-        if ycol2L:
-            chart_obj = load_template_xml_from_ods('alt_chart_y2.ods', 'content.xml', subdir='Object 1')
-        else:
-            chart_obj = load_template_xml_from_ods('alt_chart.ods', 'content.xml', subdir='Object 1')
-        
-        build_chart_object_content( chart_obj, plotSheetObj, dataTableObj )
         
 
     def add_sheet(self, data_sheetname, list_of_rows):
@@ -590,6 +565,16 @@ class SpreadSheet(object):
         for N, plot_sheetname in enumerate( self.ordered_plotL ):
             
             plotSheetObj = self.plot_sheet_objD[ plot_sheetname ]
+        
+            # create a new chart object
+            if plotSheetObj.ycol2L:
+                chart_obj = load_template_xml_from_ods('alt_chart_y2.ods', 'content.xml', subdir='Object 1')
+            else:
+                chart_obj = load_template_xml_from_ods('alt_chart.ods', 'content.xml', subdir='Object 1')
+            
+            build_chart_object_content( chart_obj, plotSheetObj )
+            
+            self.setAxisRanges( plot_sheetname )
             
             zipfile_insert( zipfileobj, 'Object %i/styles.xml'%(N+1,), self.template_ObjectN_styles_xml_obj.tostring())
             

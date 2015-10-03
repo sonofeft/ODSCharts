@@ -105,3 +105,119 @@ class PlotTableDesc(object):
                 
                 
         self.xmlSheetObj = newsheet
+        
+        
+        self.plot_sheetname = ''
+        self.data_sheetname = ''
+        self.title = ''
+        self.xlabel = ''
+        self.ylabel = ''
+        self.y2label = ''
+        self.ycolL = None
+        self.ycol2L = None
+        
+        self.logx = False
+        self.logy = False
+        self.log2y = False
+        
+        self.xcolL = []
+        self.ycolDataSheetNameL = []
+                
+        self.xcol2L = []
+        self.ycol2_DataSheetNameL = []
+        
+        self.showMarkerL = None
+        self.showMarker2L = None
+        self.showUnits = True
+        
+        self.colorL = None
+        self.color2L = None
+        
+        self.labelL = None
+        self.label2L = None
+        
+    def add_to_primary_y(self, data_sheetname, xcol, ycolL, showMarkerL=None, colorL=None, labelL=None):
+        """
+        Add new curves to primary y axis
+        """
+        if ycolL is None:
+            return
+            
+        if self.colorL is None:
+            self.colorL = []
+            self.labelL = []
+            self.showMarkerL = []
+            self.ycolL = []
+            self.xcolL = []
+            self.ycolDataSheetNameL = []
+        
+        for i,ycol in enumerate(ycolL):
+            self.ycolL.append( ycol )
+            self.xcolL.append( xcol )
+            self.ycolDataSheetNameL.append( data_sheetname )
+            
+            self.colorL.append( get_ith_color_value( colorL, i, None ) )
+            self.labelL.append( get_ith_value( labelL, i, None ) )
+            
+            if len(self.showMarkerL):
+                self.showMarkerL.append( get_ith_value( showMarkerL, i, self.showMarkerL[-1] ) )
+            else:
+                self.showMarkerL.append( get_ith_value( showMarkerL, i, True ) )
+            
+        
+    def add_to_secondary_y(self, data_sheetname, xcol, ycol2L, showMarker2L=None, color2L=None, label2L=None):
+        """
+        Add new curves to primary y axis
+        """
+        if ycol2L is None:
+            return
+        
+        if self.color2L is None:
+            self.color2L = []
+            self.label2L = []
+            self.showMarker2L = []
+            self.ycol2L = []
+            self.xcol2L = []
+            self.ycol2_DataSheetNameL = []
+        
+        for i,ycol in enumerate(ycol2L):
+            self.ycol2L.append( ycol )
+            self.xcol2L.append( xcol )
+            self.ycol2_DataSheetNameL.append( data_sheetname )
+            
+            self.color2L.append( get_ith_color_value( color2L, i, None ) )
+            self.label2L.append( get_ith_value( label2L, i, None ) )
+            
+            if len(self.showMarker2L):
+                self.showMarker2L.append( get_ith_value( showMarker2L, i, self.showMarker2L[-1] ) )
+            else:
+                self.showMarker2L.append( get_ith_value( showMarker2L, i, True ) )
+            
+            
+def get_ith_value( valL, i, default_val ):
+    """Return the ith value in valL if possible, otherwise default_val"""    
+    
+    try:
+        val = valL[i]
+    except:
+        val = default_val
+    return val
+            
+
+def get_ith_color_value( colorL, i, default_val ):
+    """Return the ith value in valL if possible, otherwise default_val"""    
+    
+    try:
+        val = colorL[i]
+    except:
+        val = default_val
+
+    c = '%s'%val # make sure it's a string
+    if c.startswith('#') and len(c)==7:
+        return c
+    else:
+        return default_val
+
+                
+                
+        
