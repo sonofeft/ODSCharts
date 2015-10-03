@@ -82,7 +82,7 @@ class MyTest(unittest.TestCase):
                                   xcol=1,
                                   ycolL=[2,3,4], ycol2L=None,
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  colorL=None, #['#666666'],
+                                  colorL=['cyan','GRaY','#69a'], #['#666666'],
                                   labelL=None, label2L=None)
         
         self.mySprSht.setXrange( -10000, 70000, plot_sheetname=None)
@@ -103,7 +103,7 @@ class MyTest(unittest.TestCase):
                                   xcol=1,
                                   ycolL=[2,5,6], ycol2L=[3,4],
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  colorL=None,
+                                  colorL=None, excel_colors=False, color2L=['c','dc'],
                                   labelL=None, label2L=None)
         
         self.mySprSht.setY2range(50, 550)        

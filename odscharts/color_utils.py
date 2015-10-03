@@ -1,4 +1,5 @@
 from __future__ import print_function
+import re
 import colorsys
 
 # These default colors are taken from Excel
@@ -175,10 +176,57 @@ def getColorName(i):
 def getColorHexStr(i):
     """Returns hex string of color in position i.  for example 0="#FF0000", 2="#0000FF"  """
     return BIG_COLOR_HEXSTR_LIST[i % len(BIG_COLOR_HEXSTR_LIST)]
-    #return cnames[ getColorName(i) ]
-    
+    #return COLOR_NAME_DICT[ getColorName(i) ]
 
-cnames = {
+
+hexstr_pattern = re.compile( r'#(?:[a-fA-F0-9]{3}|[a-fA-F0-9]{6})\b' )
+
+def getValidHexStr( name_or_hex, c_default):    
+    """
+    Returns a valid hex string.
+    name_or_hex can be an index name in COLOR_NAME_DICT or a hex string.
+    If name_or_hex is not valid, return c_default
+    """
+    c = '%s'%name_or_hex
+    #print('(c=%s)'%c, end='')
+    c = c.lower()
+    
+    if c in VERY_SHORT_NAME_DICT:
+        c = VERY_SHORT_NAME_DICT[c]
+    
+    if c in COLOR_NAME_DICT:
+        #print('(in dict)', end='')
+        return COLOR_NAME_DICT[ c ]
+    
+    c = c.upper()
+    if not c.startswith('#'):
+        c = '#' + c
+    
+    # change from short form to full length form
+    if len(c)==4:
+        c = c[0] + c[1] + c[1] + c[2] + c[2] + c[3] + c[3]
+    
+    if c in BIG_COLOR_HEXSTR_LIST:
+        #print('(in big list)', end='')
+        return c
+    
+    if hexstr_pattern.match( c ):
+        #print('(re match)', end='')
+        return c
+    
+    # Nothing looks right so return the default
+    #print('(Default Color)')
+    return c_default
+    
+VERY_SHORT_NAME_DICT = {'r':'red', 'g':'green', 'b':'blue', 'c':'cyan', 
+                        'm':'magenta', 'k':'black', 'y':'yellow', 'p':'purple',
+                        't':'tan', 'n':'navy', 'i':'indigo', 'v':'violet', 
+                        's':'salmon', 'o':'olive', 'dr':'darkred', 'db':'darkblue', 
+                        'dg':'darkgreen', 'dm':'darkmagenta', 'dc':'darkcyan', 
+                        'f':'fuchsia', 'dv':'darkviolet', 's':'sienna', 
+                        'do':'darkolivegreen' }
+
+COLOR_NAME_DICT = {
     'aliceblue'            : '#F0F8FF',
     'antiquewhite'         : '#FAEBD7',
     'aqua'                 : '#00FFFF',
@@ -356,6 +404,7 @@ cnames = {
     'maroon'               : '#800000',
     'purple'               : '#800080',
     'gray'                 : '#808080',
+    'grey'                 : '#808080',
     'skyblue'              : '#87CEEB',
     'lightskyblue'         : '#87CEFA',
     'blueviolet'           : '#8A2BE2',
@@ -443,10 +492,20 @@ cnames = {
 
 # Make color name list w/o the stdList colors (in whatever order the hash delivers)
 big_colorname_list = stdList[:] # make a copy of stdList
-big_colorname_list.extend( list( set(cnames.keys()) - set(stdList) ) )
-BIG_COLOR_HEXSTR_LIST = [cnames[key] for key in big_colorname_list]
+big_colorname_list.extend( list( set(COLOR_NAME_DICT.keys()) - set(stdList) ) )
+BIG_COLOR_HEXSTR_LIST = [COLOR_NAME_DICT[key] for key in big_colorname_list]
 
 if __name__=="__main__":
+    import sys
+    
+    def test_valid( c ):
+        print('Testing valid %8s '%c, end='')
+        print( getValidHexStr( c, "#000000") )
+        
+    for c in ['red','#3ac', '#AA0099', '55AAFF', 'goober']:
+        test_valid(c)
+    
+    sys.exit()
     
     print( "get_best_gray_text('#121212') =",get_best_gray_text('#121212') )
     

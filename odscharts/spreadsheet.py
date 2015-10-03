@@ -55,7 +55,6 @@ from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
 from object_content import build_chart_object_content
 
-from color_utils import BIG_COLOR_HEXSTR_LIST,  EXCEL_COLOR_LIST
 from template_xml_file import TemplateXML_File
 from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
@@ -445,7 +444,8 @@ class SpreadSheet(object):
         # Add new chart object and tab page in Excel/OpenOffice
         add_ObjectN( num_chart, self.metainf_manifest_xml_obj)
         
-        plotSheetObj = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj)
+        plotSheetObj = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj, 
+                                      excel_colors=excel_colors)
         plotSheetObj.document = self
         
         self.spreadsheet_obj.insert(TABLE_INSERT_POINT, plotSheetObj.xmlSheetObj)
@@ -478,13 +478,6 @@ class SpreadSheet(object):
         plotSheetObj.logx = logx
         plotSheetObj.logy = logy
         plotSheetObj.log2y = log2y
-        
-        
-        plotSheetObj.i_color = 0 # index into color chart for next curve
-        if excel_colors:
-            plotSheetObj.color_list = EXCEL_COLOR_LIST[:] # make copy of default color list
-        else:
-            plotSheetObj.color_list = BIG_COLOR_HEXSTR_LIST[:]
         
         
 

@@ -8,7 +8,7 @@ if sys.version_info < (3,):
 else:
     import ElementTree_34OD as ET
 
-from color_utils import EXCEL_COLOR_LIST
+from color_utils import BIG_COLOR_HEXSTR_LIST,  EXCEL_COLOR_LIST, getValidHexStr
 
 
 class PlotTableDesc(object):
@@ -19,7 +19,6 @@ class PlotTableDesc(object):
         """
         Return the next color in the list.
         Increment counter for next color.
-        i_color and color_list are initialized in spreadsheet
         """
         i = self.i_color
         self.i_color += 1
@@ -28,8 +27,22 @@ class PlotTableDesc(object):
         #print( 'i_color = %i,  color = "%s"'%(i,c) )
         
         return c
+        
+    def get_next_primary_color():
+        """
+        Return the next primary color in the list.
+        Increment counter for next color.
+        """
+        
+        i = self.i_prim_color
+        self.i_prim_color += 1
+        
+        c_main = self.get_next_color()
+        
+        #getValidHexStr( name_or_hex, c_default)
+        
 
-    def __init__(self, plot_sheetname, num_chart, parent_obj):
+    def __init__(self, plot_sheetname, num_chart, parent_obj, excel_colors=True):
         """Inits SpreadSheet with filename and blank content.
         
         NS: cleans up the namespace callouts of the xml Element
@@ -40,7 +53,13 @@ class PlotTableDesc(object):
         
         """
         self.i_color = 0 # index into color chart for next curve
-        self.color_list = EXCEL_COLOR_LIST[:] # copy of default color list (reinitialized in spreadsheet)
+        self.i_prim_color = 0 # index into colorL
+        self.i_sec_color = 0  # index into color2L
+        
+        if excel_colors:
+            self.color_list = EXCEL_COLOR_LIST
+        else:
+            self.color_list = BIG_COLOR_HEXSTR_LIST
         
         NS = parent_obj.NS
         
@@ -136,13 +155,16 @@ class PlotTableDesc(object):
         self.labelL = None
         self.label2L = None
         
-    def add_to_primary_y(self, data_sheetname, xcol, ycolL, showMarkerL=None, colorL=None, labelL=None):
+    def add_to_primary_y(self, data_sheetname, xcol, ycolL, showMarkerL=None, 
+                            colorL=None, labelL=None):
         """
         Add new curves to primary y axis
         """
         if ycolL is None:
             return
-            
+        
+        #print('colorL =',colorL)
+        # self.colorL will always be None 1st time through
         if self.colorL is None:
             self.colorL = []
             self.labelL = []
@@ -151,12 +173,18 @@ class PlotTableDesc(object):
             self.xcolL = []
             self.ycolDataSheetNameL = []
         
+        # Fill attribute lists with input list values
         for i,ycol in enumerate(ycolL):
             self.ycolL.append( ycol )
             self.xcolL.append( xcol )
             self.ycolDataSheetNameL.append( data_sheetname )
             
-            self.colorL.append( get_ith_color_value( colorL, i, None ) )
+            # See if there's an input color
+            c_inp = get_ith_value( colorL, i, None ) 
+            c_palette = self.get_next_color()
+            c = getValidHexStr( c_inp, c_palette)
+            self.colorL.append( c )
+            
             self.labelL.append( get_ith_value( labelL, i, None ) )
             
             if len(self.showMarkerL):
@@ -165,13 +193,15 @@ class PlotTableDesc(object):
                 self.showMarkerL.append( get_ith_value( showMarkerL, i, True ) )
             
         
-    def add_to_secondary_y(self, data_sheetname, xcol, ycol2L, showMarker2L=None, color2L=None, label2L=None):
+    def add_to_secondary_y(self, data_sheetname, xcol, ycol2L, showMarker2L=None, 
+                              color2L=None, label2L=None):
         """
         Add new curves to primary y axis
         """
         if ycol2L is None:
             return
         
+        # self.color2L will always be None 1st time through
         if self.color2L is None:
             self.color2L = []
             self.label2L = []
@@ -180,12 +210,18 @@ class PlotTableDesc(object):
             self.xcol2L = []
             self.ycol2_DataSheetNameL = []
         
+        # Fill attribute lists with input list values
         for i,ycol in enumerate(ycol2L):
             self.ycol2L.append( ycol )
             self.xcol2L.append( xcol )
             self.ycol2_DataSheetNameL.append( data_sheetname )
             
-            self.color2L.append( get_ith_color_value( color2L, i, None ) )
+            # See if there's an input color
+            c_inp = get_ith_value( color2L, i, None ) 
+            c_palette = self.get_next_color()
+            c = getValidHexStr( c_inp, c_palette)
+            self.color2L.append( c )
+            
             self.label2L.append( get_ith_value( label2L, i, None ) )
             
             if len(self.showMarker2L):
@@ -196,28 +232,11 @@ class PlotTableDesc(object):
             
 def get_ith_value( valL, i, default_val ):
     """Return the ith value in valL if possible, otherwise default_val"""    
-    
+    #print('valL=',valL,'  default_val=',default_val)
     try:
         val = valL[i]
     except:
         val = default_val
     return val
-            
-
-def get_ith_color_value( colorL, i, default_val ):
-    """Return the ith value in valL if possible, otherwise default_val"""    
-    
-    try:
-        val = colorL[i]
-    except:
-        val = default_val
-
-    c = '%s'%val # make sure it's a string
-    if c.startswith('#') and len(c)==7:
-        return c
-    else:
-        return default_val
-
-                
-                
+                            
         

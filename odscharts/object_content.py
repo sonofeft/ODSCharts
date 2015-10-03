@@ -240,7 +240,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 istyle_loc = iloc + 2
                 
                 elem = ref_series_style.find("style:graphic-properties", nsOD)
-                c = plotSheetObj.get_next_color()
+                c = plotSheetObj.colorL[0]
                 if not c is None:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c)                
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
@@ -304,7 +304,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
             new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G0S%i'%nG0S )
 
             elem = new_style.find("style:graphic-properties", nsOD)
-            c = plotSheetObj.get_next_color()
+            c = plotSheetObj.colorL[nG0S]
             if not c is None:
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
@@ -416,7 +416,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
 
 
         #  If more than one curve on secondary y...
-        if len(plotSheetObj.ycol2L) > 1:
+        if len(plotSheetObj.ycol2L) >= 1:
             auto_styles = chart_obj.find('office:automatic-styles')
             autostyleL = auto_styles.findall('style:style', nsOD)
             ref_series_style = None
@@ -428,7 +428,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                     istyle_loc = iloc + 2
                     
                     elem = ref_series_style.find("style:graphic-properties", nsOD)
-                    c = plotSheetObj.get_next_color()
+                    c = plotSheetObj.color2L[0]
                     if not c is None:
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c)                
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
@@ -449,7 +449,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 new_style.set('{urn:oasis:names:tc:opendocument:xmlns:style:1.0}name', 'G1S%i'%nG1S )
 
                 elem = new_style.find("style:graphic-properties", nsOD)
-                c = plotSheetObj.get_next_color()
+                c = plotSheetObj.color2L[nG1S]
                 if not c is None:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c )
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)                
