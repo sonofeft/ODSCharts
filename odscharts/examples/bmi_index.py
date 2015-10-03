@@ -10,7 +10,7 @@ from odscharts.spreadsheet import SpreadSheet
 mySprSht = SpreadSheet()
 
 aussieLL = [
-['Year','Normal','Overweight','Underweight'],
+['Year','Normal Aus','Overweight Aus','Underweight Aus'],
 ['','%','%','%'],
 [1990, '', '', ''],
 [1991, '', '', ''],
@@ -23,8 +23,7 @@ aussieLL = [
 [2000, 39.2, 59.8, 1],
 [2001, '', 46.2, ''],
 [2004, '', 49, ''],
-[2005, '', 49, ''],
-]
+[2005, '', 49, '']]
 
 
 mySprSht.add_sheet('Aussie_Data', aussieLL)
@@ -34,7 +33,7 @@ mySprSht.add_scatter( 'Aussie_Plot', 'Aussie_Data',
                           xcol=1,
                           ycolL=[2,3,4])
 usaLL = [
-['Year','Normal','Overweight','Underweight'],
+['Year','Normal USA','Overweight USA','Underweight USA'],
 ['','%','%','%'],
 [1990, 42.5, 55, 2.5],
 [1991, 42.5, 55, 2.5],
@@ -49,8 +48,7 @@ usaLL = [
 [2003, '', 54.4, ''],
 [2004, '', 66.3, ''],
 [2005, '', 66.9, ''],
-[2006, '', 66.9, ''],
-]
+[2006, '', 66.9, '']]
 
 mySprSht.add_sheet('USA_Data', usaLL)
 mySprSht.add_scatter( 'USA_Plot', 'USA_Data',
@@ -60,7 +58,7 @@ mySprSht.add_scatter( 'USA_Plot', 'USA_Data',
                           ycolL=[2,3,4])
 
 mySprSht.add_scatter( 'Combo_Plot', 'USA_Data',
-                          title='United States BMI', xlabel='Year', 
+                          title='USA and Australian BMI', xlabel='Year', 
                           ylabel='Percent of Population',
                           xcol=1,
                           ycolL=[2,3,4])
@@ -69,6 +67,18 @@ if 1:
     mySprSht.add_curve('Combo_Plot', 'Aussie_Data', 
                     xcol=1,
                     ycolL=[2,3,4], ycol2L=None,
+                    showMarkerL=None, showMarker2L=None,
+                    colorL=None, color2L=None)
+
+
+mySprSht.add_scatter( 'Combo2_Plot', 'Aussie_Data',
+                          title='Australian and USA BMI', xlabel='Year', 
+                          ylabel='Percent of Population',
+                          xcol=1,
+                          ycolL=[2,3,4])
+mySprSht.add_curve('Combo2_Plot', 'USA_Data', 
+                    xcol=1,
+                    ycolL=None, ycol2L=[2,3,4],
                     showMarkerL=None, showMarker2L=None,
                     colorL=None, color2L=None)
 

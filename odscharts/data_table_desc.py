@@ -132,4 +132,4 @@ class DataTableDesc(object):
                 
                 
 
-        self.table_obj = newsheet
+        self.xmlSheetObj = newsheet

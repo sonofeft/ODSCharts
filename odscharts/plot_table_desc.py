@@ -104,4 +104,4 @@ class PlotTableDesc(object):
                 add_tags( child )
                 
                 
-        self.table_obj = newsheet
+        self.xmlSheetObj = newsheet

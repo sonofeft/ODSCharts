@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import zipfile
 import os
 import time
-from copy import deepcopy
+from copy import deepcopy, copy
 import  subprocess
 
 import sys
@@ -53,7 +53,7 @@ else:
 from data_table_desc import DataTableDesc
 from plot_table_desc import PlotTableDesc
 from metainf import add_ObjectN
-from object_content import build_chart_object_content
+from object_content import build_chart_object_content, add_curves_to_chart_object
 
 from color_utils import BIG_COLOR_HEXSTR_LIST,  EXCEL_COLOR_LIST
 from template_xml_file import TemplateXML_File
@@ -143,7 +143,7 @@ class SpreadSheet(object):
         
         self.filename = None
         self.data_table_objD = {} # dict of data desc objects (DataTableDesc)
-        self.plot_table_objD = {} # dict of plot desc objects (PlotTableDesc)
+        self.plot_sheet_objD = {} # dict of plot desc objects (PlotTableDesc)
         self.ordered_plotL = [] # list of plot names in insertion order 
         self.ordered_dataL = [] # list of data sheet names in insertion order
         
@@ -213,8 +213,8 @@ class SpreadSheet(object):
         if plot_sheetname is None:
             plot_sheetname = self.ordered_plotL[-1]
             
-        plot_desc = self.plot_table_objD[plot_sheetname]
-        chart_obj = plot_desc.chart_obj
+        plotSheetObj = self.plot_sheet_objD[plot_sheetname]
+        chart_obj = plotSheetObj.chart_obj
         nsOD = chart_obj.rev_nsOD
         
         auto_styles = chart_obj.find('office:automatic-styles')
@@ -308,34 +308,43 @@ class SpreadSheet(object):
             data_sheetname = self.ordered_dataL[-1]
                         
         # make sure that plot_sheetname and data_sheetname exist
-        if plot_sheetname not in self.plot_table_objD:
+        if plot_sheetname not in self.plot_sheet_objD:
             raise  MySheetNameError('Named plot sheet does NOT exist: "%s"'%plot_sheetname)
 
         # Data sheet must already exist in order to make a plot
         if data_sheetname not in self.data_table_objD:
             raise  MySheetNameError('Named data sheet does NOT exist: "%s"'%data_sheetname)
+        
+        # Make of copy of original plotSheetObj
+        old_plotSheetObj = self.plot_sheet_objD[plot_sheetname]
+        plotSheetObj = copy( old_plotSheetObj )
+        
+        plotSheetObj.plot_sheetname = plot_sheetname
+        plotSheetObj.data_sheetname = data_sheetname
+        plotSheetObj.xcol = xcol
+        plotSheetObj.ycolL = ycolL
+        plotSheetObj.ycol2L = ycol2L
+        
+        
+        def fill_out_list( yL, valL, default_val=None):
+            if yL is None:
+                pass
+            elif valL is None:
+                valL = [default_val for y in yL]
+            else:
+                while len(valL) < len(yL):
+                    valL.append( valL[-1] )
+            return valL
             
-        old_plot_desc = self.plot_table_objD[plot_sheetname]
-        plot_desc = deepcopy( old_plot_desc )
+        showMarkerL = fill_out_list( ycolL, showMarkerL, True )
+        showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
+        plotSheetObj.showMarkerL = showMarkerL
+        plotSheetObj.showMarker2L = showMarker2L
         
-        plot_desc.plot_sheetname = plot_sheetname
-        plot_desc.data_sheetname = data_sheetname
-        #plot_desc.title = title
-        #plot_desc.xlabel = xlabel
-        #plot_desc.ylabel = ylabel
-        #plot_desc.y2label = y2label
-        plot_desc.xcol = xcol
-        plot_desc.ycolL = ycolL
-        plot_desc.ycol2L = ycol2L
+        chart_obj = plotSheetObj.chart_obj
+        dataTableObj = self.data_table_objD[data_sheetname]
         
-        #plot_desc.logx = logx
-        #plot_desc.logy = logy
-        #plot_desc.log2y = log2y
-        
-        chart_obj = plot_desc.chart_obj
-        table_desc = self.data_table_objD[data_sheetname]
-        
-        #build_chart_object_content( chart_obj, plot_desc, table_desc )
+        add_curves_to_chart_object(chart_obj, plotSheetObj, dataTableObj)
 
 
     def add_scatter(self, plot_sheetname, data_sheetname, 
@@ -401,50 +410,50 @@ class SpreadSheet(object):
         :rtype: None
         """
         # Don't allow duplicate sheet names
-        if (plot_sheetname in self.data_table_objD) or (plot_sheetname in self.plot_table_objD):
+        if (plot_sheetname in self.data_table_objD) or (plot_sheetname in self.plot_sheet_objD):
             raise  MySheetNameError('Duplicate sheet name submitted for new plot: "%s"'%plot_sheetname)
 
         # Data sheet must already exist in order to make a plot
         if (data_sheetname not in self.data_table_objD):
             raise  MySheetNameError('Data sheet for "%s" plot missing: "%s"'%(plot_sheetname, data_sheetname))
 
-        num_chart = len(self.plot_table_objD) + 1
+        num_chart = len(self.plot_sheet_objD) + 1
         
         # Add new chart object and tab page in Excel/OpenOffice
         add_ObjectN( num_chart, self.metainf_manifest_xml_obj)
         
-        plot_desc = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj)
+        plotSheetObj = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj)
         
         
-        self.spreadsheet_obj.insert(TABLE_INSERT_POINT, plot_desc.table_obj)
+        self.spreadsheet_obj.insert(TABLE_INSERT_POINT, plotSheetObj.xmlSheetObj)
         
         #obj_name = 'Object %i'%num_chart
         
         # ================= save PlotTableDesc object
-        self.plot_table_objD[plot_sheetname] = plot_desc
+        self.plot_sheet_objD[plot_sheetname] = plotSheetObj
         self.ordered_plotL.append( plot_sheetname )
         
         # Start making the chart object that goes onto the plot sheet 
         #  Assign plot parameters to PlotTableDesc object
-        plot_desc.plot_sheetname = plot_sheetname
-        plot_desc.data_sheetname = data_sheetname
-        plot_desc.title = title
-        plot_desc.xlabel = xlabel
-        plot_desc.ylabel = ylabel
-        plot_desc.y2label = y2label
-        plot_desc.xcol = xcol
-        plot_desc.ycolL = ycolL
-        plot_desc.ycol2L = ycol2L
+        plotSheetObj.plot_sheetname = plot_sheetname
+        plotSheetObj.data_sheetname = data_sheetname
+        plotSheetObj.title = title
+        plotSheetObj.xlabel = xlabel
+        plotSheetObj.ylabel = ylabel
+        plotSheetObj.y2label = y2label
+        plotSheetObj.xcol = xcol
+        plotSheetObj.ycolL = ycolL
+        plotSheetObj.ycol2L = ycol2L
         
-        plot_desc.logx = logx
-        plot_desc.logy = logy
-        plot_desc.log2y = log2y
+        plotSheetObj.logx = logx
+        plotSheetObj.logy = logy
+        plotSheetObj.log2y = log2y
         
-        plot_desc.i_color = 0 # index into color chart for next curve
+        plotSheetObj.i_color = 0 # index into color chart for next curve
         if excel_colors:
-            plot_desc.color_list = EXCEL_COLOR_LIST[:] # make copy of default color list
+            plotSheetObj.color_list = EXCEL_COLOR_LIST[:] # make copy of default color list
         else:
-            plot_desc.color_list = BIG_COLOR_HEXSTR_LIST[:]
+            plotSheetObj.color_list = BIG_COLOR_HEXSTR_LIST[:]
         
         def fill_out_list( yL, valL, default_val=None):
             if yL is None:
@@ -460,21 +469,21 @@ class SpreadSheet(object):
         showMarker2L = fill_out_list( ycol2L, showMarker2L, True )
         
         def fill_out_color_list(yL, cL, ioffset=0):
-            """Change plot_desc.color_list to reflect colorL and color2L inputs"""
+            """Change plotSheetObj.color_list to reflect colorL and color2L inputs"""
             if type(cL) == type([1,2,3]) and  type(yL) == type([1,2,3]):
                 for i,c in enumerate( cL ):
                     if c is not None:
                         c = '%s'%c # make sure it's a string
                         if c.startswith('#') and len(c)==7:
-                            if i+ioffset < len( plot_desc.color_list ):
-                                plot_desc.color_list[i+ioffset] = c
+                            if i+ioffset < len( plotSheetObj.color_list ):
+                                plotSheetObj.color_list[i+ioffset] = c
                             else:
                                 # If number of curves larger than color list, append colors
-                                plot_desc.color_list.append(c)
+                                plotSheetObj.color_list.append(c)
                         else:
                             print('WARNING... illegal color string input "%s"'%c)
                 
-        # put any input colors into plot_desc.color_list
+        # put any input colors into plotSheetObj.color_list
         fill_out_color_list( ycolL, colorL)
         # just in case there is no primary curve, catch len() exception
         try:
@@ -482,18 +491,18 @@ class SpreadSheet(object):
         except:
             fill_out_color_list( ycol2L, color2L, ioffset=0)
         
-        plot_desc.showMarkerL = showMarkerL
-        plot_desc.showMarker2L = showMarker2L
-        plot_desc.showUnits = showUnits
+        plotSheetObj.showMarkerL = showMarkerL
+        plotSheetObj.showMarker2L = showMarker2L
+        plotSheetObj.showUnits = showUnits
         
-        #plot_desc.colorL = colorL
-        #plot_desc.color2L = color2L
+        #plotSheetObj.colorL = colorL
+        #plotSheetObj.color2L = color2L
         
-        plot_desc.labelL = labelL
-        plot_desc.label2L = label2L
+        plotSheetObj.labelL = labelL
+        plotSheetObj.label2L = label2L
         
-        # assigns attribute chart_obj to plot_desc
-        table_desc = self.data_table_objD[data_sheetname]
+        # assigns attribute chart_obj to plotSheetObj
+        dataTableObj = self.data_table_objD[data_sheetname]
         
         # create a new chart object
         if ycol2L:
@@ -501,7 +510,7 @@ class SpreadSheet(object):
         else:
             chart_obj = load_template_xml_from_ods('alt_chart.ods', 'content.xml', subdir='Object 1')
         
-        build_chart_object_content( chart_obj, plot_desc, table_desc )
+        build_chart_object_content( chart_obj, plotSheetObj, dataTableObj )
         
 
     def add_sheet(self, data_sheetname, list_of_rows):
@@ -532,15 +541,15 @@ class SpreadSheet(object):
         :rtype: None
                 
         """
-        if (data_sheetname in self.data_table_objD) or (data_sheetname in self.plot_table_objD):
+        if (data_sheetname in self.data_table_objD) or (data_sheetname in self.plot_sheet_objD):
             raise  MySheetNameError('Duplicate sheet name submitted for new datasheet: "%s"'%data_sheetname)
                 
                 
-        table_desc = DataTableDesc( data_sheetname, list_of_rows, self.content_xml_obj)
-        self.spreadsheet_obj.insert(TABLE_INSERT_POINT, table_desc.table_obj)
+        dataTableObj = DataTableDesc( data_sheetname, list_of_rows, self.content_xml_obj)
+        self.spreadsheet_obj.insert(TABLE_INSERT_POINT, dataTableObj.xmlSheetObj)
         
-        self.data_table_objD[data_sheetname] = table_desc
-        self.ordered_dataL.append( table_desc )
+        self.data_table_objD[data_sheetname] = dataTableObj
+        self.ordered_dataL.append( dataTableObj )
             
 
     def save(self, filename='my_chart.ods', launch=False):
@@ -580,11 +589,11 @@ class SpreadSheet(object):
                                     
         for N, plot_sheetname in enumerate( self.ordered_plotL ):
             
-            plot_desc = self.plot_table_objD[ plot_sheetname ]
+            plotSheetObj = self.plot_sheet_objD[ plot_sheetname ]
             
             zipfile_insert( zipfileobj, 'Object %i/styles.xml'%(N+1,), self.template_ObjectN_styles_xml_obj.tostring())
             
-            zipfile_insert( zipfileobj, 'Object %i/content.xml'%(N+1,), plot_desc.chart_obj.tostring())
+            zipfile_insert( zipfileobj, 'Object %i/content.xml'%(N+1,), plotSheetObj.chart_obj.tostring())
                                         
                                     
         zipfile_insert( zipfileobj, 'content.xml', self.content_xml_obj.tostring())

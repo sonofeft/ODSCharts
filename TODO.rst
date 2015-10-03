@@ -3,6 +3,11 @@
 TODO
 ====
 
+* Refactor chart to "rebuild-on-save"
+
+* Change \n to \r in all titles
+    - Maybe have subtitle as input (just add to title with \r)
+
 * Create an Examples page
 
 * Add utility to build list of rows from list of columns
