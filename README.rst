@@ -13,8 +13,13 @@
     :target: https://pypi.python.org/pypi/odscharts
 
 
-Creates Opendocument Spreadsheets With Charts For Microsoft Excel And Openoffice
-================================================================================
+
+
+ODSCharts For Microsoft Excel And OpenOffice
+============================================
+
+ODSCharts creates Opendocument spreadsheets `(*.ods files)` with scatter charts that either 
+Microsoft Excel or OpenOffice can open and manipulate.
 
 
 See the Code at: `<https://github.com/sonofeft/ODSCharts>`_
