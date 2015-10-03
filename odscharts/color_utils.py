@@ -170,7 +170,7 @@ stdList = ['red','green','blue','cyan','magenta','olive','brown','gold','coral',
     'darkred','darkgreen','darkblue']
 def getColorName(i):
     """Returns name of color in position i.  for example 0="red", 2="blue"  """
-    return big_colorname_list[ i % len(big_colorname_list) ]
+    return BIG_COLORNAME_LIST[ i % len(BIG_COLORNAME_LIST) ]
     
         
 def getColorHexStr(i):
@@ -491,9 +491,9 @@ COLOR_NAME_DICT = {
 
 
 # Make color name list w/o the stdList colors (in whatever order the hash delivers)
-big_colorname_list = stdList[:] # make a copy of stdList
-big_colorname_list.extend( list( set(COLOR_NAME_DICT.keys()) - set(stdList) ) )
-BIG_COLOR_HEXSTR_LIST = [COLOR_NAME_DICT[key] for key in big_colorname_list]
+BIG_COLORNAME_LIST = stdList[:] # make a copy of stdList
+BIG_COLORNAME_LIST.extend( list( set(COLOR_NAME_DICT.keys()) - set(stdList) ) )
+BIG_COLOR_HEXSTR_LIST = [COLOR_NAME_DICT[key] for key in BIG_COLORNAME_LIST]
 
 if __name__=="__main__":
     import sys
@@ -541,8 +541,8 @@ if __name__=="__main__":
             
     print( colorL)
             
-    for i in range( 2*len(big_colorname_list) ):
-        if i==len(big_colorname_list):
+    for i in range( 2*len(BIG_COLORNAME_LIST) ):
+        if i==len(BIG_COLORNAME_LIST):
             print()
             print()
         print( getColorName(i), getColorHexStr(i), end='')

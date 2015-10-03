@@ -15,6 +15,7 @@ Contents:
    :maxdepth: 2
 
    quickstart
+   colors
    functions
    copyright
    authors
