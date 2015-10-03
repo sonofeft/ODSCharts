@@ -1,4 +1,4 @@
-.. 2015-10-02 sonofeft 73792c02ce56a9af2afa7eaf2b9f47497873f09d
+.. 2015-10-03 sonofeft 0a7332442bb149c2a6c09bd42dc13e3ce3f39091
    Maintain spacing of "History" and "GitHub Log" titles
 
 History
@@ -6,6 +6,27 @@ History
 
 GitHub Log
 ----------
+
+* Oct 03, 2015
+    - (by: sonofeft) 
+        - refactored so add_curve would work.
+        - Name Refactoring
+            Started add_curves_to_chart but I need to refactor that out and make it
+            build-on-save
+* Oct 02, 2015
+    - (by: sonofeft) 
+        - start version 0.0.8
+            Cleaned up Excel default colors
+        - Changed to Beta
+            Added custom color palette with excel_colors flag.
+            Starting BMI example
+        - "Click Images" tweek to docs
+        - Added field name descriptions to doc string of spreadsheet.py
+        - Added platform independent os.startfile
+        - Version 0.0.6
+            Took docstring of _version.py out of automodule sphinx doc
+        - Screen Shots added to docs
+        - more doc updates
 
 * Oct 02, 2015
     - (by: sonofeft) 

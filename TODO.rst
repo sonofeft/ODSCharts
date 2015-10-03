@@ -3,7 +3,7 @@
 TODO
 ====
 
-* Refactor chart to "rebuild-on-save"
+* Add docstring to add_curve
 
 * Change \n to \r in all titles
     - Maybe have subtitle as input (just add to title with \r)
