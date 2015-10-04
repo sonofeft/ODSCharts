@@ -104,10 +104,10 @@ class MyTest(unittest.TestCase):
                                   xcol=1,
                                   ycolL=[2,5,6], ycol2L=[3,4],
                                   lineThkL=[1,2,3],
-                                  lineThk2L=[.5, 1.5],
+                                  lineThk2L=[3.5, 1.5],
                                   showMarkerL=[1,1,1], showMarker2L=None,
                                   showLineL=[0,1,0], showLine2L=[0,1],
-                                  colorL=None, excel_colors=False, color2L=['c','dc'],
+                                  #colorL=['r','g','b'], excel_colors=False, color2L=['c','dc'],
                                   labelL=None, label2L=None)
 
         self.mySprSht.setY2range(50, 550)

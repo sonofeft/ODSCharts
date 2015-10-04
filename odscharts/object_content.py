@@ -88,7 +88,16 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
 
     nsOD = chart_obj.rev_nsOD
     doc = plotSheetObj.document
+    
+    def set_new_tag(elem, shortname, value):
+        """
+        Adds shortname to qnames and sets attrib variable on elem
+        shortname format is "chart:symbol-type"
+        """
 
+        doc.add_tag(NS(shortname, nsOD), plotSheetObj.chart_obj)
+        elem.set(NS(shortname, nsOD), value)
+        
 
     title = chart.find('chart:title/text:p', nsOD)
     #print( 'title.text = ',title.text)
@@ -240,6 +249,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 ref_series_style = astyle
                 istyle_loc = iloc + 2
 
+                # graphic-properties
                 elem = ref_series_style.find("style:graphic-properties", nsOD)
                 c = plotSheetObj.colorL[0]
                 if not c is None:
@@ -266,11 +276,21 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 #elem.set(NS("draw:fill-color", nsOD), "#999999")
                 #elem.set(NS("draw:fill", nsOD), "solid")
 
+                # chart-properties
                 elem = ref_series_style.find("style:chart-properties", nsOD)
                 if plotSheetObj.showMarkerL[0]:  # showMarkerL is guaranteed to have same dimension as ycolL
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
                 else:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
+
+                # elem is  chart-properties
+                if not plotSheetObj.showLineL[0]:
+                    set_new_tag(elem, "chart:symbol-type", "named-symbol")
+                    set_new_tag(elem, "chart:symbol-name", plotSheetObj.markerTypeL[0])
+                    hw = plotSheetObj.markerHtWdL[0]
+                    set_new_tag(elem, "chart:symbol-width", hw)
+                    set_new_tag(elem, "chart:symbol-height", hw)
+
 
         # Look for logarithmic scale on primary y
         if plotSheetObj.logy:
@@ -347,6 +367,13 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
             else:
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
 
+            # elem is  chart-properties
+            if not plotSheetObj.showLineL[nG0S]:
+                set_new_tag(elem, "chart:symbol-type", "named-symbol")
+                set_new_tag(elem, "chart:symbol-name", plotSheetObj.markerTypeL[nG0S])
+                hw = plotSheetObj.markerHtWdL[nG0S]
+                set_new_tag(elem, "chart:symbol-width", hw)
+                set_new_tag(elem, "chart:symbol-height", hw)
 
             auto_styles.insert(istyle_loc, new_style )
             istyle_loc += 1
@@ -482,6 +509,16 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                     else:
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
 
+                    # elem is  chart-properties
+                    if not plotSheetObj.showLine2L[0]:
+                        set_new_tag(elem, "chart:symbol-type", "named-symbol")
+                        set_new_tag(elem, "chart:symbol-name", plotSheetObj.markerType2L[0])
+                        hw = plotSheetObj.markerHtWd2L[0]
+                        set_new_tag(elem, "chart:symbol-width", hw)
+                        set_new_tag(elem, "chart:symbol-height", hw)
+
+
+
             plotSheetObj.ref_series_style2 = ref_series_style
 
             #print( ref_series_style.items())
@@ -513,6 +550,14 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
                 else:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
+
+                # elem is  chart-properties
+                if not plotSheetObj.showLine2L[nG1S]:
+                    set_new_tag(elem, "chart:symbol-type", "named-symbol")
+                    set_new_tag(elem, "chart:symbol-name", plotSheetObj.markerType2L[nG1S])
+                    hw = plotSheetObj.markerHtWd2L[nG1S]
+                    set_new_tag(elem, "chart:symbol-width", hw)
+                    set_new_tag(elem, "chart:symbol-height", hw)
 
 
                 auto_styles.insert(istyle_loc, new_style )

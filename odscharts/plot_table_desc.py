@@ -10,6 +10,10 @@ else:
 
 from color_utils import BIG_COLOR_HEXSTR_LIST,  EXCEL_COLOR_LIST, getValidHexStr
 
+SYMBOL_TYPE_LIST = ["diamond", "square", "arrow-up",  "arrow-down", "arrow-right", 
+                    "arrow-left", "bow-tie", "hourglass", "circle", "star", "x", 
+                    "plus", "asterisk"]
+
 
 class PlotTableDesc(object):
     """Holds a description of a scatter plot sheet.
@@ -28,19 +32,15 @@ class PlotTableDesc(object):
 
         return c
 
-    def get_next_primary_color():
+    def get_next_symbol_type(self):
         """
-        Return the next primary color in the list.
-        Increment counter for next color.
+        Return the next symbol type in SYMBOL_TYPE_LIST
         """
-
-        i = self.i_prim_color
-        self.i_prim_color += 1
-
-        c_main = self.get_next_color()
-
-        #getValidHexStr( name_or_hex, c_default)
-
+        i = self.i_symbol_type
+        self.i_symbol_type += 1
+        
+        return SYMBOL_TYPE_LIST[i % len(SYMBOL_TYPE_LIST)]
+        
 
     def __init__(self, plot_sheetname, num_chart, parent_obj, excel_colors=True):
         """Inits SpreadSheet with filename and blank content.
@@ -55,6 +55,8 @@ class PlotTableDesc(object):
         self.i_color = 0 # index into color chart for next curve
         self.i_prim_color = 0 # index into colorL
         self.i_sec_color = 0  # index into color2L
+        
+        self.i_symbol_type = 0 # index into SYMBOL_TYPE_LIST
 
         if excel_colors:
             self.color_list = EXCEL_COLOR_LIST
@@ -147,11 +149,18 @@ class PlotTableDesc(object):
 
         self.showMarkerL = None
         self.showMarker2L = None
+        self.markerTypeL = None
+        self.markerType2L = None
+        
         self.showLineL = None
         self.showLine2L = None
 
         self.lineThkL = None
         self.lineThk2L = None
+        
+        self.markerHtWdL = None
+        self.markerHtWd2L = None
+        
         self.showUnits = True
 
         self.colorL = None
@@ -175,8 +184,10 @@ class PlotTableDesc(object):
             self.colorL = []
             self.labelL = []
             self.showMarkerL = []
+            self.markerTypeL = []
             self.showLineL = []
             self.lineThkL = []
+            self.markerHtWdL = []
             self.ycolL = []
             self.xcolL = []
             self.ycolDataSheetNameL = []
@@ -192,6 +203,8 @@ class PlotTableDesc(object):
             c_palette = self.get_next_color()
             c = getValidHexStr( c_inp, c_palette)
             self.colorL.append( c )
+            
+            self.markerTypeL.append( self.get_next_symbol_type() )
 
             self.labelL.append( get_ith_value( labelL, i, None ) )
 
@@ -205,13 +218,19 @@ class PlotTableDesc(object):
             else:
                 self.showLineL.append( get_ith_value( showLineL, i, True ) )
 
+            # first get number into line thickness
             if len(self.lineThkL):
                 self.lineThkL.append( get_ith_value( lineThkL, i, self.lineThkL[-1] ) )
             else:
                 self.lineThkL.append( get_ith_value( lineThkL, i, 0.8 ) )
+                
+            # then convert to mm
             try:
-                self.lineThkL[-1] = "%gmm"%float(self.lineThkL[-1])
+                v = float(self.lineThkL[-1])
+                self.markerHtWdL.append("%gmm"%(v*3,))
+                self.lineThkL[-1] = "%gmm"%v
             except:
+                self.markerHtWdL.append("%2.4mm")
                 self.lineThkL[-1] = "0.8mm"
 
     def add_to_secondary_y(self, data_sheetname, xcol, ycol2L,
@@ -228,8 +247,10 @@ class PlotTableDesc(object):
             self.color2L = []
             self.label2L = []
             self.showMarker2L = []
+            self.markerType2L = []
             self.showLine2L = []
             self.lineThk2L = []
+            self.markerHtWd2L = []
             self.ycol2L = []
             self.xcol2L = []
             self.ycol2_DataSheetNameL = []
@@ -245,6 +266,8 @@ class PlotTableDesc(object):
             c_palette = self.get_next_color()
             c = getValidHexStr( c_inp, c_palette)
             self.color2L.append( c )
+            
+            self.markerType2L.append( self.get_next_symbol_type() )
 
             self.label2L.append( get_ith_value( label2L, i, None ) )
 
@@ -258,13 +281,19 @@ class PlotTableDesc(object):
             else:
                 self.showLine2L.append( get_ith_value( showLine2L, i, True ) )
 
+            # first get number into line thickness
             if len(self.lineThk2L):
                 self.lineThk2L.append( get_ith_value( lineThk2L, i, self.lineThk2L[-1] ) )
             else:
                 self.lineThk2L.append( get_ith_value( lineThk2L, i, 0.8 ) )
+                
+            # then convert to mm
             try:
-                self.lineThk2L[-1] = "%gmm"%float(self.lineThk2L[-1])
+                v = float(self.lineThk2L[-1])
+                self.markerHtWd2L.append("%gmm"%(v*3,))
+                self.lineThk2L[-1] = "%gmm"%v
             except:
+                self.markerHtWd2L.append("%2.4mm")
                 self.lineThk2L[-1] = "0.8mm"
 
 def get_ith_value( valL, i, default_val ):
