@@ -3,8 +3,6 @@
 TODO
 ====
 
-* Add docstring to add_curve
-
 * Change \n to \r in all titles
     - Maybe have subtitle as input (just add to title with \r)
 
@@ -22,9 +20,8 @@ TODO
     - omit completely
     - omit certain series
 
-* Control line style, width
+* Control line style
 
-* Control marker style, size, on/off
 
 * Add picture/image to sheet or plot
 

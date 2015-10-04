@@ -337,8 +337,60 @@ class SpreadSheet(object):
                     lineThkL=None, lineThk2L=None,
                     colorL=None, color2L=None,
                     labelL=None, label2L=None):
-        """
-        Not Yet Implemented
+        """        
+        Use data from "data_sheetname" to add a plot or plots to scatter plot on
+        page  "plot_sheetname".
+
+        Most of the inputs are exactly like the "add_scatter" method.
+
+        Assume index into columns is "1-based" such that column "A" is 1, "B" is 2, etc.
+
+        NOTE: marker color is NOT supported in Excel from ODS format.
+        Markers will appear, but will be some other default color.
+        For this reason, ODSCharts uses Excel default color list unless the user
+        overrides them with colorL or color2L.
+
+        :param plot_sheetname: Name of the plot's tabbed window in Excel or OpenOffice
+        :type  plot_sheetname: str or unicode
+        :param data_sheetname: Name of the data's tabbed window in Excel or OpenOffice
+        :type  data_sheetname: str or unicode
+
+        :keyword int xcol: 1-based column index on data sheet of X Axis data (default==1)
+
+        :keyword ycolL: List of 1-based column indeces on data sheet of Primary Y Axis data (default==None)
+        :type  ycolL: None or int list
+        :keyword ycol2L: List of 1-based column indeces on data sheet of Secondary Y Axis data  (default==None)
+        :type  ycol2L: None or int list
+
+        :keyword showMarkerL: List of boolean values indicating marker or no-marker for ycolL data (default==None)
+        :type  showMarkerL: None or bool list
+        :keyword showMarker2L: List of boolean values indicating marker or no-marker for ycol2L data (default==None)
+        :type  showMarker2L: None or bool list
+
+        :keyword lineThkL: List of thickness values for primary y axis curves.
+            If the list is not defined, then the thickness is set to "0.8mm".
+            For example, lineThkL=[0.5, 1, 2] gives thin, about normal and thick lines.
+            (Units=="mm")(default==None)
+        :type  lineThkL: list of float
+        :keyword lineThk2L: List of thickness values for secondary y axis curves
+            If the list is not defined, then the thickness is set to "0.8mm".
+            For example, lineThkL=[0.5, 1, 2] gives thin, about normal and thick lines.
+            (Units=="mm")(default==None)
+        :type  lineThk2L: list of float
+
+        :keyword colorL: List of color values to use for ycolL curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
+        :type  colorL: None or str list
+        :keyword color2L: List of color values to use for ycol2L curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
+        :type  color2L: None or str list
+        :keyword labelL: Not yet implemented (default==None)
+        :type  labelL: None or str list
+        :keyword label2L: Not yet implemented (default==None)
+        :type  label2L: None or str list
+
+        :return: None
+        :rtype: None
+        
+        
         """
 
         # use latest plot_sheetname if no name is provided
