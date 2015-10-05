@@ -3,6 +3,8 @@
 TODO
 ====
 
+* put lineStyleL in doc strings.
+
 * Change \n to \r in all titles
     - Maybe have subtitle as input (just add to title with \r)
 

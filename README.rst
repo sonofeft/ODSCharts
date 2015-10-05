@@ -53,20 +53,29 @@ The format is a very narrow subset of full spreadsheet support.
     :width: 50%
 
 
-
-What I Know About ODF
----------------------
+What I Think I Know
+-------------------
 
     * Matplotlib is very good when you want to publish a chart **without** the data.
 
     * Spreadsheets are very good when you want to publish **both** the chart **and** the data.
     
-    * I got motivated to make a cross-platform, open-source, python solution to generate  ``*.odf`` files.
-    
-    * OpenOffice reads ``*.odf`` files created by Excel much better than Excel reads ``*.odf`` files created by OpenOffice.
+    * Therefore the world needs a cross-platform, open-source, python solution to generate  
+    cross-platform, open-source spreadsheet files.
 
-    * Excel ``*.odf`` files are more simple than OpenOffice ``*.odf`` files (Excel only partially supports odf)
 
-    * ODSCharts generates ``*.odf`` files by reverse-engineering ``*.odf`` files created by Excel.
+
+What I Know About ODS
+---------------------
     
-That's It... That's pretty much all I know.
+    * ``*.ods`` files are cross-platform, open-source spreadsheet files.
+    
+    * OpenOffice reads ``*.ods`` files created by Excel much better than Excel reads ``*.ods`` files created by OpenOffice.
+
+    * Excel ``*.ods`` files are more simple than OpenOffice ``*.ods`` files (Excel only partially supports ``ods``)
+    
+    * It makes sense to reverse-engineer Excel-generated ``*.ods`` files as cross-platform, open-source spreadsheet files.
+
+    * ODSCharts generates ``*.ods`` files by reverse-engineering ``*.ods`` files created by Excel.
+    
+That's It... That's how ODSCharts was born.
