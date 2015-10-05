@@ -83,7 +83,8 @@ class MyTest(unittest.TestCase):
                                   ycolL=[2,3,4], ycol2L=None,
                                   showMarkerL=[1,1,1], showMarker2L=None,
                                   lineThkL=["0.1in","0.01in"],
-                                  colorL=['cyan','GRaY','#69a'], #['#666666'],
+                                  lineStyleL=[1,2,3],
+                                  colorL=None, #['cyan','GRaY','#69a'], #['#666666'],
                                   labelL=None, label2L=None)
 
         self.mySprSht.setXrange( -10000, 70000, plot_sheetname=None)
@@ -105,8 +106,9 @@ class MyTest(unittest.TestCase):
                                   ycolL=[2,5,6], ycol2L=[3,4],
                                   lineThkL=[1,2,3],
                                   lineThk2L=[3.5, 1.5],
+                                  lineStyle2L=[4,5],
                                   showMarkerL=[1,1,1], showMarker2L=None,
-                                  showLineL=[0,1,0], showLine2L=[0,1],
+                                  showLineL=[0,1,0], showLine2L=[1,1],
                                   #colorL=['r','g','b'], excel_colors=False, color2L=['c','dc'],
                                   labelL=None, label2L=None)
 

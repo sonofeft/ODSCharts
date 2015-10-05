@@ -58,6 +58,8 @@ from object_content import build_chart_object_content
 from template_xml_file import TemplateXML_File
 from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
+from line_styles import gen_dash_elements_from_set_of_istyles
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -335,6 +337,7 @@ class SpreadSheet(object):
                     showMarkerL=None, showMarker2L=None,
                     showLineL=None, showLine2L=None,
                     lineThkL=None, lineThk2L=None,
+                    lineStyleL=None, lineStyle2L=None,
                     colorL=None, color2L=None,
                     labelL=None, label2L=None):
         """        
@@ -366,6 +369,11 @@ class SpreadSheet(object):
         :type  showMarkerL: None or bool list
         :keyword showMarker2L: List of boolean values indicating marker or no-marker for ycol2L data (default==None)
         :type  showMarker2L: None or bool list
+
+        :keyword showLineL: List of boolean values indicating line or no-line for ycolL data (default==None)
+        :type  showLineL: None or bool list
+        :keyword showLine2L: List of boolean values indicating line or no-line for ycol2L data (default==None)
+        :type  showLine2L: None or bool list
 
         :keyword lineThkL: List of thickness values for primary y axis curves.
             If the list is not defined, then the thickness is set to "0.8mm".
@@ -416,11 +424,13 @@ class SpreadSheet(object):
         plotSheetObj.add_to_primary_y(data_sheetname, xcol, ycolL,
                                       showMarkerL=showMarkerL, colorL=colorL,
                                       lineThkL=lineThkL,
+                                      lineStyleL=lineStyleL,
                                       labelL=labelL)
 
         plotSheetObj.add_to_secondary_y( data_sheetname, xcol, ycol2L,
                                          showMarker2L=showMarker2L, color2L=color2L,
                                          lineThk2L=lineThk2L,
+                                         lineStyle2L=lineStyle2L,
                                          label2L=label2L)
 
 
@@ -433,6 +443,7 @@ class SpreadSheet(object):
                       showLineL=None, showLine2L=None,
                       showUnits=True,
                       lineThkL=None, lineThk2L=None,
+                      lineStyleL=None, lineStyle2L=None,
                       colorL=None, color2L=None,
                       labelL=None, label2L=None):
         """
@@ -472,6 +483,11 @@ class SpreadSheet(object):
         :type  showMarkerL: None or bool list
         :keyword showMarker2L: List of boolean values indicating marker or no-marker for ycol2L data (default==None)
         :type  showMarker2L: None or bool list
+        
+        :keyword showLineL: List of boolean values indicating line or no-line for ycolL data (default==None)
+        :type  showLineL: None or bool list
+        :keyword showLine2L: List of boolean values indicating line or no-line for ycol2L data (default==None)
+        :type  showLine2L: None or bool list
 
         :keyword lineThkL: List of thickness values for primary y axis curves.
             If the list is not defined, then the thickness is set to "0.8mm".
@@ -532,6 +548,7 @@ class SpreadSheet(object):
                                       showLineL=showLineL,
                                       colorL=colorL,
                                       lineThkL=lineThkL,
+                                      lineStyleL=lineStyleL,
                                       labelL=labelL)
 
         plotSheetObj.add_to_secondary_y( data_sheetname, xcol, ycol2L,
@@ -539,6 +556,7 @@ class SpreadSheet(object):
                                          showLine2L=showLine2L,
                                          color2L=color2L,
                                          lineThk2L=lineThk2L,
+                                         lineStyle2L=lineStyle2L,
                                          label2L=label2L)
 
         # Start making the chart object that goes onto the plot sheet
@@ -645,8 +663,18 @@ class SpreadSheet(object):
             build_chart_object_content( chart_obj, plotSheetObj )
 
             self.setAxisRanges( plot_sheetname )
+            
+            if len(plotSheetObj.set_of_line_styles) > 0:
+                ObjectN_styles_xml_obj = deepcopy( self.template_ObjectN_styles_xml_obj )
+                nsOD = chart_obj.rev_nsOD
+                office_styles_obj = ObjectN_styles_xml_obj.root.find("office:styles", nsOD)
+                gen_dash_elements_from_set_of_istyles( office_styles_obj, 
+                                                       plotSheetObj.set_of_line_styles )
+            else:
+                ObjectN_styles_xml_obj = self.template_ObjectN_styles_xml_obj
+                
 
-            zipfile_insert( zipfileobj, 'Object %i/styles.xml'%(N+1,), self.template_ObjectN_styles_xml_obj.tostring())
+            zipfile_insert( zipfileobj, 'Object %i/styles.xml'%(N+1,), ObjectN_styles_xml_obj.tostring())
 
             zipfile_insert( zipfileobj, 'Object %i/content.xml'%(N+1,), plotSheetObj.chart_obj.tostring())
 

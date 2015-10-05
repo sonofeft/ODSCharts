@@ -14,7 +14,6 @@ SYMBOL_TYPE_LIST = ["diamond", "square", "arrow-up",  "arrow-down", "arrow-right
                     "arrow-left", "bow-tie", "hourglass", "circle", "star", "x", 
                     "plus", "asterisk"]
 
-
 class PlotTableDesc(object):
     """Holds a description of a scatter plot sheet.
     """
@@ -158,6 +157,10 @@ class PlotTableDesc(object):
         self.lineThkL = None
         self.lineThk2L = None
         
+        self.lineStyleL = None
+        self.lineStyle2L = None
+        self.set_of_line_styles = set()
+        
         self.markerHtWdL = None
         self.markerHtWd2L = None
         
@@ -171,7 +174,8 @@ class PlotTableDesc(object):
 
     def add_to_primary_y(self, data_sheetname, xcol, ycolL,
                             showMarkerL=None, showLineL=None,
-                            lineThkL=None, colorL=None, labelL=None):
+                            lineThkL=None, lineStyleL=None, 
+                            colorL=None, labelL=None):
         """
         Add new curves to primary y axis
         """
@@ -187,6 +191,7 @@ class PlotTableDesc(object):
             self.markerTypeL = []
             self.showLineL = []
             self.lineThkL = []
+            self.lineStyleL = []
             self.markerHtWdL = []
             self.ycolL = []
             self.xcolL = []
@@ -233,9 +238,21 @@ class PlotTableDesc(object):
                 self.markerHtWdL.append("%2.4mm")
                 self.lineThkL[-1] = "0.8mm"
 
+            # Set line style to solid unless otherwise indicated
+            if len(self.lineStyleL):
+                self.lineStyleL.append( get_ith_value( lineStyleL, i, self.lineStyleL[-1] ) )
+            else:
+                self.lineStyleL.append( get_ith_value( lineStyleL, i, 0 ) )
+                
+            # include all y curves (primary and secondary) in set_of_line_styles
+            self.set_of_line_styles.update( set(self.lineStyleL) )
+            self.set_of_line_styles.discard(0)  # Make sure that 0 does not appear
+            
+
     def add_to_secondary_y(self, data_sheetname, xcol, ycol2L,
                               showMarker2L=None, showLine2L=None,
-                              lineThk2L=None, color2L=None, label2L=None):
+                              lineThk2L=None, lineStyle2L=None, 
+                              color2L=None, label2L=None):
         """
         Add new curves to primary y axis
         """
@@ -250,6 +267,7 @@ class PlotTableDesc(object):
             self.markerType2L = []
             self.showLine2L = []
             self.lineThk2L = []
+            self.lineStyle2L = []
             self.markerHtWd2L = []
             self.ycol2L = []
             self.xcol2L = []
@@ -295,6 +313,16 @@ class PlotTableDesc(object):
             except:
                 self.markerHtWd2L.append("%2.4mm")
                 self.lineThk2L[-1] = "0.8mm"
+
+            # Set line style to solid unless otherwise indicated
+            if len(self.lineStyle2L):
+                self.lineStyle2L.append( get_ith_value( lineStyle2L, i, self.lineStyle2L[-1] ) )
+            else:
+                self.lineStyle2L.append( get_ith_value( lineStyle2L, i, 0 ) )
+                
+            # include all y curves (primary and secondary) in set_of_line_styles
+            self.set_of_line_styles.update( set(self.lineStyle2L) )
+            self.set_of_line_styles.discard(0)  # Make sure that 0 does not appear
 
 def get_ith_value( valL, i, default_val ):
     """Return the ith value in valL if possible, otherwise default_val"""

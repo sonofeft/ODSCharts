@@ -5,6 +5,8 @@ for a new chart
 from copy import deepcopy
 from collections import OrderedDict
 from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
+from line_styles import get_dash_a_name
+
 
 import sys
 if sys.version_info < (3,):
@@ -255,6 +257,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 if not c is None:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0}stroke-color", c)
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}fill-color", c)
+                    
 
 
                 w = plotSheetObj.lineThkL[0]
@@ -266,7 +269,14 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                     elem.set(NS("draw:fill", nsOD), "none")
                     elem.set(NS("draw:stroke", nsOD), "none")
                 else:
-                    elem.set(NS("draw:stroke", nsOD), "solid")
+                    # we're showing the line, should it have a style???
+                    i_style = plotSheetObj.lineStyleL[0]
+                    #print('i_style =', i_style)
+                    if i_style > 0:
+                        elem.set(NS("draw:stroke-dash", nsOD) ,get_dash_a_name( i_style ))
+                        elem.set(NS("draw:stroke", nsOD) ,'dash')
+                    else:
+                        elem.set(NS("draw:stroke", nsOD), "solid")
 
 
                 # .............. Failed Experiment ...................
@@ -359,7 +369,14 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 elem.set(NS("draw:fill", nsOD), "none")
                 elem.set(NS("draw:stroke", nsOD), "none")
             else:
-                elem.set(NS("draw:stroke", nsOD), "solid")
+                i_style = plotSheetObj.lineStyleL[nG0S]
+                #print('i_style =', i_style)
+                if i_style > 0:
+                    elem.set(NS("draw:stroke-dash", nsOD) ,get_dash_a_name( i_style ))
+                    elem.set(NS("draw:stroke", nsOD) ,'dash')
+                else:
+                    elem.set(NS("draw:stroke", nsOD), "solid")
+                
 
             elem = new_style.find("style:chart-properties", nsOD)
             if plotSheetObj.showMarkerL[nG0S]:  # showMarkerL is guaranteed to have same dimension as ycolL
@@ -437,7 +454,7 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
 
         # Look for logarithmic scale on primary y
         if plotSheetObj.log2y:
-            print( 'Got log on secondary y' )
+            #print( 'Got log on secondary y' )
 
             # Find "Axs2"
             logy_style,ipos_logy_style = find_elem_w_attrib('style:style', auto_styles, nsOD,
@@ -501,7 +518,15 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                         elem.set(NS("draw:fill", nsOD), "none")
                         elem.set(NS("draw:stroke", nsOD), "none")
                     else:
-                        elem.set(NS("draw:stroke", nsOD), "solid")
+                        
+                        i_style = plotSheetObj.lineStyle2L[0]
+                        #print('i_style =', i_style)
+                        if i_style > 0:
+                            elem.set(NS("draw:stroke-dash", nsOD) ,get_dash_a_name( i_style ))
+                            elem.set(NS("draw:stroke", nsOD) ,'dash')
+                        else:
+                            elem.set(NS("draw:stroke", nsOD), "solid")
+                        
 
                     elem = ref_series_style.find("style:chart-properties", nsOD)
                     if plotSheetObj.showMarkerL[0]:  # showMarkerL is guaranteed to have same dimension as ycol2L
@@ -543,7 +568,14 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                     elem.set(NS("draw:fill", nsOD), "none")
                     elem.set(NS("draw:stroke", nsOD), "none")
                 else:
-                    elem.set(NS("draw:stroke", nsOD), "solid")
+                    i_style = plotSheetObj.lineStyle2L[nG1S]
+                    #print('i_style =', i_style)
+                    if i_style > 0:
+                        elem.set(NS("draw:stroke-dash", nsOD) ,get_dash_a_name( i_style ))
+                        elem.set(NS("draw:stroke", nsOD) ,'dash')
+                    else:
+                        elem.set(NS("draw:stroke", nsOD), "solid")
+                    
 
                 elem = new_style.find("style:chart-properties", nsOD)
                 if plotSheetObj.showMarker2L[nG1S]:  # showMarkerL is guaranteed to have same dimension as ycol2L
