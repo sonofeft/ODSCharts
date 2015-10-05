@@ -60,8 +60,7 @@ What I Think I Know
 
     * Spreadsheets are very good when you want to publish **both** the chart **and** the data.
     
-    * Therefore the world needs a cross-platform, open-source, python solution to generate  
-    cross-platform, open-source spreadsheet files.
+    * Therefore the world needs a cross-platform, open-source, python solution to generate  cross-platform, open-source spreadsheet files.
 
 
 
