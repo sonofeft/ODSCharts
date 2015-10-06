@@ -10,6 +10,9 @@ Line Styles
 
 There are 10 dashed line styles in ``ODSCharts``. This example shows them all.
 
+Notice that OpenOffice renders the various styles more distinctly than Excel.  
+A number of the styles are hard to distinguish from one another in Excel.
+
 .. raw:: html
 
     <table border="1">

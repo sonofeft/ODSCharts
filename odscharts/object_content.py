@@ -83,10 +83,12 @@ def get_all_units_on_chart( plotSheetObj ):
 
 def insert_below_series_named(target_name, new_chart_series, plot_area):
     
-    for series in plot_area.getchildren():
+    childL = plot_area.getchildren()
+    
+    for series in childL:
         style_name = series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', None)
         if style_name == target_name:
-            ipos = plot_area._children.index( series )
+            ipos = childL.index( series )
             #print( 'Found Series %s at %i'%(target_name, ipos) )
             plot_area.insert(ipos+1, new_chart_series )
             return
