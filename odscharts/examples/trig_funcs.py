@@ -1,14 +1,6 @@
 """
 This example demonstrates large data sets
 """
-import sys
-import os
-
-# These inserts are needed to find odscharts development version ONLY in special cases
-#here = os.path.abspath(os.path.dirname(__file__))
-#sys.path.insert(0, os.path.abspath( os.path.join(here, "../" ) ) )  
-#sys.path.insert(0, os.path.abspath( os.path.join(here, "../../" ) ) )
-
 from math import *
 from odscharts.spreadsheet import SpreadSheet
 

@@ -3,6 +3,9 @@
 TODO
 ====
 
+* lineStyleL MAY NOT show up in legend
+    - tries, but is not always apparent
+
 * put lineStyleL in doc strings.
 
 * Change \n to \r in all titles

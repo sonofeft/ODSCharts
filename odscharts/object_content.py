@@ -81,6 +81,18 @@ def get_all_units_on_chart( plotSheetObj ):
 
     return xUnitsStr, yUnitsStr, y2UnitsStr
 
+def insert_below_series_named(target_name, new_chart_series, plot_area):
+    
+    for series in plot_area.getchildren():
+        style_name = series.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', None)
+        if style_name == target_name:
+            ipos = plot_area._children.index( series )
+            #print( 'Found Series %s at %i'%(target_name, ipos) )
+            plot_area.insert(ipos+1, new_chart_series )
+            return
+            
+
+
 def build_chart_object_content( chart_obj, plotSheetObj ):
     """When chart_obj is input, it still holds values from the original template"""
 
@@ -415,8 +427,9 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
             new_chart_series.set('{urn:oasis:names:tc:opendocument:xmlns:table:1.0}cell-range-address',xval_cell_range)
 
 
-            ipos = len(plot_area)-1
-            plot_area.insert(ipos, new_chart_series )
+            #ipos = len(plot_area)-1
+            #plot_area.insert(ipos, new_chart_series )
+            insert_below_series_named('G0S%i'%(nG0S-1,), new_chart_series, plot_area)
 
             nG0S += 1
 
@@ -619,6 +632,8 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 plot_area.insert(ipos, new_chart_series )
 
                 nG1S += 1
+
+    #plot_area._children.sort(  key=lambda child: child.get('{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}style-name', '0') )
 
     plotSheetObj.istyle_loc = istyle_loc
     plotSheetObj.y_series = y_series

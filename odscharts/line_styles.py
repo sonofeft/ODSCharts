@@ -12,10 +12,11 @@ else:
 
 # 'Solid' is a place-holder 
 #    such that lineStyle==0 will not generate a new style of draw:stroke-dash
-#                     0         1            2               3            4
-LINE_STYLE_LIST = ['Solid', 'LongDash','LongDashDot','LongDashDotDot','DashDot',
-                   'Dot','Dash', 'ShortDash','ShortDot','ShortDashDot','ShortDashDotDot']
-#                    5     6          7          8           9              10
+#                     0      1      2         3            4               5
+LINE_STYLE_LIST = ['Solid','Dot','Dash', 'ShortDash','ShortDot','ShortDashDot',
+                   'ShortDashDotDot','LongDash','LongDashDot','LongDashDotDot','DashDot']
+#                          6            7             8             9              10
+
 
 def get_display_style_name(i):
     """Returns the attribute value of draw:display-name (e.g. "LongDash")"""
@@ -53,11 +54,14 @@ def generate_xml_drawStrokeDash_element( parent, i_style ):
     
     a_name = get_dash_a_name( i_style )  # names start at "a5" since i_style==0 is not allowed
     
-    def make_subelem(ndot1=1, ldot1='0.25in', ndot2=0, ldot2='0in', dist='0.03125in'):
+    def make_subelem(ndot1=1, ldot1='0.25in', ndot2=0, ldot2='0in', dist='0.03125in', style='rect'):
+        """
+        style can be "rect" or "round" (hard to tell the difference)
+        """
         new_elem_2 = ET.SubElement(parent,"{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash", 
         attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}name', '%s'%a_name), 
         ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}display-name', '%s'%display_name), 
-        ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}style', 'rect'), 
+        ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}style', '%s'%style), 
         ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}dots1', '%i'%ndot1), 
         ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}dots1-length', '%s'%ldot1), 
         ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}dots2', '%i'%ndot2), 

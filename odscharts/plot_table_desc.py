@@ -224,8 +224,8 @@ class PlotTableDesc(object):
                 self.showLineL.append( get_ith_value( showLineL, i, True ) )
 
             # first get number into line thickness
-            if len(self.lineThkL):
-                self.lineThkL.append( get_ith_value( lineThkL, i, self.lineThkL[-1] ) )
+            if len(self.lineThkL): # remember that this holds strings like: "2.5mm" 
+                self.lineThkL.append( get_ith_value( lineThkL, i, self.lineThkL[-1][:-2] ) )
             else:
                 self.lineThkL.append( get_ith_value( lineThkL, i, 0.8 ) )
                 
@@ -300,8 +300,8 @@ class PlotTableDesc(object):
                 self.showLine2L.append( get_ith_value( showLine2L, i, True ) )
 
             # first get number into line thickness
-            if len(self.lineThk2L):
-                self.lineThk2L.append( get_ith_value( lineThk2L, i, self.lineThk2L[-1] ) )
+            if len(self.lineThk2L): # remember that this holds strings like: "2.5mm" 
+                self.lineThk2L.append( get_ith_value( lineThk2L, i, self.lineThk2L[-1][:-2] ) )
             else:
                 self.lineThk2L.append( get_ith_value( lineThk2L, i, 0.8 ) )
                 
