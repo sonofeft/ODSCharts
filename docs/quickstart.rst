@@ -38,6 +38,9 @@ After navigating to the directory holding ODSCharts source code, do the followin
     
 This will execute the local ``setup.py`` file and insure that the pip-specific commands in ``setup.py`` are run.
 
+
+.. _internal_trig_example:
+
 Running ODSCharts
 -----------------
 
@@ -51,9 +54,12 @@ The ``list_of_rows`` input variable holds the various curve labels, units and da
 
 A data sheet named "Trig_Data" is created by the ``add_sheet`` command.
 
-A scatter plot named "Trig_Plot" is created by the ``add_scatter`` command. Note that it identifies "Trig_Data" as the source of the data for the plot.
+A scatter plot named "Trig_Plot" is created by the ``add_scatter`` command. 
+Note that it identifies "Trig_Data" as the source of the data for the plot.
 
-The columns are identified with a one-based index such that the first column is column number 1. Note that the input ``xcol=1`` idenifies column 1 as the ``X Axis``. The curves are identified as columns 2 and 3 by the input ``ycolL=[2,3]``.
+The columns are identified with a one-based index such that the first column is column number 1. 
+Note that the input ``xcol=1`` idenifies column 1 as the ``X Axis``. 
+The curves are identified as columns 2 and 3 by the input ``ycolL=[2,3]``.
 
 The output ods file is saved as ``trig_plot.ods`` (Note the ``.ods`` is added automatically).
 

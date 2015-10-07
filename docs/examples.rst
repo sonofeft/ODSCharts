@@ -5,13 +5,83 @@
 Examples
 ========
 
+Altitude vs Pressure
+--------------------
+
+This is a simple scatter plot of a standard atmospheric pressure vs altitude.
+
+
+.. image:: ./_static/alt_vs_press_excel.png
+    :width: 50%
+
+
+`Click images to see full size`
+
+:download:`download alt_vs_press.ods <./_static/alt_vs_press.ods>`
+
+:download:`download alt_vs_press.py <./_static/alt_vs_press.py>`
+
+
+The python code below generates the plot shown above. The basic approach is to create 
+a ``list_of_rows`` containing the data labels, units and values. Make a data sheet with 
+the ``add_sheet`` command. Create a scatter plot with the ``add_scatter`` command. And finally,
+save as an ``ods`` file with the ``save`` command.
+
+The ``list_of_rows`` input variable has the following format.
+
+    * Row 1 holds all of the labels of each column
+    * Row 2 holds the units for each column (use '' for no units)
+    * Rows 3 through N hold data values.
+
+After saving, the spreadsheet can be launched with the ``launch_application`` command and either
+Excel or OpenOffice will open depending on which is linked to ods files on your system. (Note that the 
+``save`` command also has a ``launch=True`` option, shown in the next example.)
+
+.. code:: python
+
+    from odscharts.spreadsheet import SpreadSheet
+
+    mySprSht = SpreadSheet()
+
+    list_of_rows = [['Altitude','Pressure'], ['feet','psia'], 
+                    [0, 14.7],    [5000, 12.23], [10000, 10.11],   
+                    [30000, 4.36],[60000, 1.04]]
+
+    mySprSht.add_sheet('Alt_Data', list_of_rows)
+
+    mySprSht.add_scatter( 'Alt_P_Plot', 'Alt_Data',
+                              title='Pressure vs Altitude', 
+                              xlabel='Altitude', 
+                              ylabel='Pressure', 
+                              xcol=1,
+                              ycolL=[2])
+    mySprSht.save( filename='alt_vs_press' )
+
+    mySprSht.launch_application()
+
+
+
+Trig Functions
+--------------
+
+The trig function example builds a large ``list_of_rows`` variable to display sine and cosine functions.
+
+See :ref:`internal_trig_example` on the QuickStart page for further details of the Trig Function example.
+
+
+:download:`download trig_plot.ods <./_static/trig_plot.ods>`
+
+:download:`download trig_funcs.py <./_static/trig_funcs.py>`
+
+
+
 Line Styles
 -----------
 
 There are 10 dashed line styles in ``ODSCharts``. This example shows them all.
 
-Notice that OpenOffice renders the various styles more distinctly than Excel.  
-A number of the styles are hard to distinguish from one another in Excel.
+Notice that OpenOffice renders the various line styles more distinctly than Excel.  
+(i.e. A number of the styles are hard to distinguish from one another in Excel.)
 
 .. raw:: html
 
@@ -34,6 +104,11 @@ A number of the styles are hard to distinguish from one another in Excel.
 
 
 `Click images to see full size`
+
+
+:download:`download line_style_plot.ods <./_static/line_style_plot.ods>`
+
+:download:`download line_styles.py <./_static/line_styles.py>`
 
 
 The python code below generates the plots shown above.
