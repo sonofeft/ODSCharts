@@ -223,8 +223,9 @@ VERY_SHORT_NAME_DICT = {'r':'red', 'g':'green', 'b':'blue', 'c':'cyan',
                         't':'tan', 'n':'navy', 'i':'indigo', 'v':'violet',
                         's':'salmon', 'o':'olive', 'dr':'darkred', 'db':'darkblue',
                         'dg':'darkgreen', 'dm':'darkmagenta', 'dc':'darkcyan',
-                        'f':'fuchsia', 'dv':'darkviolet', 's':'sienna',
-                        'do':'darkolivegreen' }
+                        'dv':'darkviolet', 's':'sienna',
+                        'do':'darkolivegreen', 'f':'firebrick', 'ds':'darksalmon', 
+                        'dk':'darkkhaki' }
 
 COLOR_NAME_DICT = {
     'aliceblue'            : '#F0F8FF',
