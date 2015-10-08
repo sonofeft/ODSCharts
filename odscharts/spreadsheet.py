@@ -2,7 +2,8 @@
 # -*- coding: ascii -*-
 
 r"""
-ODSCharts creates ods spreadsheet files readable by either Microsoft Excel or OpenOffice.
+ODSCharts creates ods spreadsheet files readable by either Microsoft Excel, 
+LibreOffice or OpenOffice.
 
 The format is a very narrow subset of full spreadsheet support::
     * All sheets contain either a table of numbers or a chart object
@@ -115,12 +116,12 @@ class MySheetNameError(Exception):
         return repr(self.msg)
 
 class SpreadSheet(object):
-    """Creates OpenDocument Spreadsheets with charts for Microsoft Excel and OpenOffice
+    """Creates OpenDocument Spreadsheets with charts for Microsoft Excel, LibreOffice and OpenOffice
     """
 
     def launch_application(self):
         """
-        Will launch Excel or Openoffice using "os.startfile" or "open" or
+        Will launch Excel, LibreOffice or Openoffice using "os.startfile" or "open" or
         "xdg-open" depending on the platform.
 
         ONLY WORKS IF file has been saved.
@@ -353,9 +354,9 @@ class SpreadSheet(object):
         For this reason, ODSCharts uses Excel default color list unless the user
         overrides them with colorL or color2L.
 
-        :param plot_sheetname: Name of the plot's tabbed window in Excel or OpenOffice
+        :param plot_sheetname: Name of the plot's tabbed window in Excel,LibreOffice or OpenOffice
         :type  plot_sheetname: str or unicode
-        :param data_sheetname: Name of the data's tabbed window in Excel or OpenOffice
+        :param data_sheetname: Name of the data's tabbed window in Excel, LibreOffice or OpenOffice
         :type  data_sheetname: str or unicode
 
         :keyword int xcol: 1-based column index on data sheet of X Axis data (default==1)
@@ -458,18 +459,18 @@ class SpreadSheet(object):
         For this reason, ODSCharts uses Excel default color list unless the user
         overrides them with colorL or color2L.
 
-        :param plot_sheetname: Name of the plot's tabbed window in Excel or OpenOffice
+        :param plot_sheetname: Name of the plot's tabbed window in Excel, LibreOffice or OpenOffice
         :type  plot_sheetname: str or unicode
-        :param data_sheetname: Name of the data's tabbed window in Excel or OpenOffice
+        :param data_sheetname: Name of the data's tabbed window in Excel, LibreOffice or OpenOffice
         :type  data_sheetname: str or unicode
 
-        :keyword title: Title of the plot as displayed in  Excel or OpenOffice (default=='')
+        :keyword title: Title of the plot as displayed in  Excel, LibreOffice or OpenOffice (default=='')
         :type  title: str or unicode
-        :keyword xlabel: X Axis label as displayed in  Excel or OpenOffice (default=='')
+        :keyword xlabel: X Axis label as displayed in  Excel, LibreOffice or OpenOffice (default=='')
         :type  xlabel: str or unicode
-        :keyword ylabel: Primary Y Axis label as displayed in  Excel or OpenOffice (default=='')
+        :keyword ylabel: Primary Y Axis label as displayed in  Excel, LibreOffice or OpenOffice (default=='')
         :type  ylabel: str or unicode
-        :keyword y2label: Secondary Y Axis Label as displayed in  Excel or OpenOffice  (default=='')
+        :keyword y2label: Secondary Y Axis Label as displayed in  Excel, LibreOffice or OpenOffice  (default=='')
         :type  y2label: str or unicode
 
         :keyword int xcol: 1-based column index on data sheet of X Axis data (default==1)
@@ -528,7 +529,7 @@ class SpreadSheet(object):
 
         num_chart = len(self.plot_sheet_objD) + 1
 
-        # Add new chart object and tab page in Excel/OpenOffice
+        # Add new chart object and tab page in Excel/LibreOffice/OpenOffice
         add_ObjectN( num_chart, self.metainf_manifest_xml_obj)
 
         plotSheetObj = PlotTableDesc( plot_sheetname, num_chart, self.content_xml_obj,
@@ -594,7 +595,7 @@ class SpreadSheet(object):
                 [10000, 10.11, 483.0],
                 [60000, 1.04, 390]]
 
-        :param str data_sheetname:  Name of the data's tabbed window in Excel or OpenOffice
+        :param str data_sheetname:  Name of the data's tabbed window in Excel, LibreOffice or OpenOffice
         :type  data_sheetname: str or unicode
         :param list list_of_rows: the list_of_rows will be placed at "A1" and should be:
             - row 1 is labels
@@ -617,14 +618,14 @@ class SpreadSheet(object):
 
     def save(self, filename='my_chart.ods', launch=False):
         """
-        Saves SpreadSheet to an ods file readable by Microsoft Excel or OpenOffice.
+        Saves SpreadSheet to an ods file readable by Microsoft Excel, LibreOffice or OpenOffice.
 
-        If the launch flag is set, will launch Excel or Openoffice using "os.startfile"
+        If the launch flag is set, will launch Excel, LibreOffice or Openoffice using "os.startfile"
         or "open" or "xdg-open" depending on the platform.
 
         :keyword filename: Name of ods file to save (default=='my_chart.ods')
         :type  filename: str or unicode
-        :keyword bool launch: If True, will launch Excel or OpenOffice (default==False)
+        :keyword bool launch: If True, will launch Excel, LibreOffice or OpenOffice (default==False)
         :return: None
         :rtype: None
         """

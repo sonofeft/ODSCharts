@@ -15,11 +15,11 @@
 
 
 
-ODSCharts For Microsoft Excel And OpenOffice
-============================================
+ODSCharts For Microsoft Excel, LibreOffice And OpenOffice
+=========================================================
 
 ODSCharts creates Opendocument spreadsheets `(*.ods files)` with scatter charts that either 
-Microsoft Excel or OpenOffice can open and manipulate.
+Microsoft Excel, LibreOffice or OpenOffice can open and manipulate.
 
 
 See the Code at: `<https://github.com/sonofeft/ODSCharts>`_
@@ -29,7 +29,7 @@ See the Docs at: `<http://odscharts.readthedocs.org/en/latest/>`_
 See PyPI page at:`<https://pypi.python.org/pypi/odscharts>`_
 
 
-ODSCharts will create ods files readable by either Microsoft Excel or OpenOffice.
+ODSCharts will create ods files readable by Microsoft Excel, LibreOffice or OpenOffice.
 
 The format is a very narrow subset of full spreadsheet support. 
 *There is no attempt to supply a full API interface*::
@@ -71,9 +71,9 @@ What I Know About ODS
     
     * ``*.ods`` files are cross-platform, open-source spreadsheet files.
     
-    * OpenOffice reads ``*.ods`` files created by Excel much better than Excel reads ``*.ods`` files created by OpenOffice.
+    * LibreOffice and OpenOffice read ``*.ods`` files created by Excel much better than Excel reads ``*.ods`` files created by LibreOffice or OpenOffice.
 
-    * Excel ``*.ods`` files are more simple than OpenOffice ``*.ods`` files (Excel only partially supports ``ods``)
+    * Excel ``*.ods`` files are more simple than LibreOffice or OpenOffice ``*.ods`` files (Excel only partially supports ``ods``)
     
     * It makes sense to reverse-engineer Excel-generated ``*.ods`` files as cross-platform, open-source spreadsheet files.
 

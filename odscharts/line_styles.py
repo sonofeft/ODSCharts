@@ -68,7 +68,7 @@ def generate_xml_drawStrokeDash_element( parent, i_style ):
         ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}dots2-length', '%s'%ldot2), 
         ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}distance', '%s'%dist)]))  
 
-    # Guess distances from Excel and OpenOffice files
+    # Guess distances from Excel, LibreOffice and OpenOffice files
     # short dot="0.015625in", dot="0.03125in"
     # short dash="0.0625in",  dash="0.125in",  long dash="0.25in"
     
@@ -96,7 +96,7 @@ def generate_xml_drawStrokeDash_element( parent, i_style ):
     return
 
 """
-    # some of OpenOffice line styles
+    # some of LibreOffice/OpenOffice line styles
     new_elem_3 = ET.SubElement(parent,"{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}stroke-dash", 
     attrib=OrderedDict([('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}name', '_33__20_Dashes_20_3_20_Dots_20__28_var_29_'), 
     ('{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}display-name', '3 Dashes 3 Dots (var)'), 

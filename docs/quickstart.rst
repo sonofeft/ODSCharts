@@ -63,7 +63,9 @@ The curves are identified as columns 2 and 3 by the input ``ycolL=[2,3]``.
 
 The output ods file is saved as ``trig_plot.ods`` (Note the ``.ods`` is added automatically).
 
-When saving, the flag ``launch=True`` will cause either Excel or Open Office to launch with the named ods file, depending on which application is linked to ``*.ods`` files. Screen shots of both Excel and OpenOffice are shown below the code.
+When saving, the flag ``launch=True`` will cause either Excel or Open Office to
+launch with the named ods file, depending on which application is linked to ``*.ods``
+files. Screen shots of both Excel and OpenOffice are shown below the code.
 
 .. code:: python
 

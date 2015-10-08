@@ -43,7 +43,7 @@ setup(
     name='odscharts',
     version = __version__,  # METADATA_RESET:    version = '<<version>>',
 
-    description = 'Creates OpenDocument Spreadsheets with charts for Microsoft Excel and OpenOffice',
+    description = 'Creates OpenDocument Spreadsheets with charts for Microsoft Excel, LibreOffice and OpenOffice',
     long_description = long_description,
 
     # The project's main homepage.

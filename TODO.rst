@@ -12,7 +12,6 @@ TODO
 * Change \n to \r in all titles
     - Maybe have subtitle as input (just add to title with \r)
 
-* Create an Examples page
 
 * Add utility to build list of rows from list of columns
 
@@ -25,9 +24,6 @@ TODO
 * Control Legend
     - omit completely
     - omit certain series
-
-* Control line style
-
 
 * Add picture/image to sheet or plot
 

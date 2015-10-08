@@ -16,8 +16,8 @@ Because Excel does not support marker colors in ods files, ODSCharts defaults to
 using the Excel color table so that the marker colors 
 will match when opened in Excel. (i.e. ``excel_colors=True``)
 
-OpenOffice will properly support any specified colors, so the Alternate Table may
-be preferred when using OpenOffice (i.e. ``excel_colors=False``)
+LibreOffice and OpenOffice will properly support any specified colors, so the Alternate Table may
+be preferred when using LibreOffice or OpenOffice (i.e. ``excel_colors=False``)
 
 Users may also assign colors to each curve.
 When using ``add_scatter`` or ``add_curve`` to create curves on a plot, the two inputs

@@ -34,7 +34,7 @@ The ``list_of_rows`` input variable has the following format.
     * Rows 3 through N hold data values.
 
 After saving, the spreadsheet can be launched with the ``launch_application`` command and either
-Excel or OpenOffice will open depending on which is linked to ods files on your system. (Note that the 
+Excel, LibreOffice or OpenOffice will open depending on which is linked to ods files on your system. (Note that the 
 ``save`` command also has a ``launch=True`` option, shown in the next example.)
 
 .. code:: python
