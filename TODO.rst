@@ -3,7 +3,6 @@
 TODO
 ====
 
-* showMarkL=[0] not working on Linux (LibreOffice)
 
 * lineStyleL MAY NOT show up in legend
     - tries, but is not always apparent
