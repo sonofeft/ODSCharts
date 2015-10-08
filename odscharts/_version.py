@@ -1,5 +1,5 @@
 
-__version__ = '0.0.10'  # METADATA_RESET:__version__ = '<<version>>'
+__version__ = '0.0.11'  # METADATA_RESET:__version__ = '<<version>>'
 
 
 """
