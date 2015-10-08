@@ -46,19 +46,19 @@ import  subprocess
 
 import sys
 if sys.version_info < (3,):
-    import ElementTree_27OD as ET
+    import odscharts.ElementTree_27OD as ET
 else:
-    import ElementTree_34OD as ET
+    import odscharts.ElementTree_34OD as ET
 
-from data_table_desc import DataTableDesc
-from plot_table_desc import PlotTableDesc
-from metainf import add_ObjectN
-from object_content import build_chart_object_content
+from odscharts.data_table_desc import DataTableDesc
+from odscharts.plot_table_desc import PlotTableDesc
+from odscharts.metainf import add_ObjectN
+from odscharts.object_content import build_chart_object_content
 
-from template_xml_file import TemplateXML_File
-from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
+from odscharts.template_xml_file import TemplateXML_File
+from odscharts.find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
 
-from line_styles import gen_dash_elements_from_set_of_istyles
+from odscharts.line_styles import gen_dash_elements_from_set_of_istyles
 
 here = os.path.abspath(os.path.dirname(__file__))
 

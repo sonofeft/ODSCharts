@@ -4,9 +4,9 @@ A DataTableDesc object holds the XML logic as well as all info about a data tabl
 
 import sys
 if sys.version_info < (3,):
-    import ElementTree_27OD as ET
+    import odscharts.ElementTree_27OD as ET
 else:
-    import ElementTree_34OD as ET
+    import odscharts.ElementTree_34OD as ET
 
 
 

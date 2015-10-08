@@ -3,9 +3,9 @@ from collections import OrderedDict
 import io
 
 if sys.version_info < (3,):
-    import ElementTree_27OD as ET
+    import odscharts.ElementTree_27OD as ET
 else:
-    import ElementTree_34OD as ET
+    import odscharts.ElementTree_34OD as ET
 
 
 # get StringIO for either python 2.x or 3.x

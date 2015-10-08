@@ -4,9 +4,9 @@ Make changes to META-INF data and Object 1-N subdirectories
 
 import sys
 if sys.version_info < (3,):
-    import ElementTree_27OD as ET
+    import odscharts.ElementTree_27OD as ET
 else:
-    import ElementTree_34OD as ET
+    import odscharts.ElementTree_34OD as ET
 
 
 

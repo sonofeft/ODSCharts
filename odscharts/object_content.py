@@ -4,15 +4,15 @@ for a new chart
 """
 from copy import deepcopy
 from collections import OrderedDict
-from find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
-from line_styles import get_dash_a_name
+from odscharts.find_obj import find_elem_w_attrib, elem_set, NS_attrib, NS
+from odscharts.line_styles import get_dash_a_name
 
 
 import sys
 if sys.version_info < (3,):
-    import ElementTree_27OD as ET
+    import odscharts.ElementTree_27OD as ET
 else:
-    import ElementTree_34OD as ET
+    import odscharts.ElementTree_34OD as ET
 
 
 def get_col_letters_from_number(num):
