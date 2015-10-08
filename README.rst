@@ -18,7 +18,7 @@
 ODSCharts For Microsoft Excel, LibreOffice And OpenOffice
 =========================================================
 
-ODSCharts creates Opendocument spreadsheets `(*.ods files)` with scatter charts that either 
+ODSCharts creates Opendocument spreadsheets `(*.ods files)` with scatter charts that
 Microsoft Excel, LibreOffice or OpenOffice can open and manipulate.
 
 
@@ -75,8 +75,8 @@ What I Know About ODS
 
     * Excel ``*.ods`` files are more simple than LibreOffice or OpenOffice ``*.ods`` files (Excel only partially supports ``ods``)
     
-    * It makes sense to reverse-engineer Excel-generated ``*.ods`` files as cross-platform, open-source spreadsheet files.
+    * It's easy to reverse-engineer Excel-generated ``*.ods`` files as cross-platform, open-source spreadsheet files.
 
     * ODSCharts generates ``*.ods`` files by reverse-engineering ``*.ods`` files created by Excel.
     
-That's It... That's how ODSCharts was born.
+That's It... That's how and why ODSCharts was created.
