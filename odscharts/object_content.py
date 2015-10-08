@@ -304,6 +304,10 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 elem = ref_series_style.find("style:chart-properties", nsOD)
                 if plotSheetObj.showMarkerL[0]:  # showMarkerL is guaranteed to have same dimension as ycolL
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
+                    for at in [NS("chart:symbol-name", nsOD), NS("chart:symbol-width", nsOD), 
+                                  NS("chart:symbol-height", nsOD)]:
+                                      if elem.get(at):
+                                          del elem.attrib[at]
                 else:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
 
@@ -395,6 +399,10 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
             elem = new_style.find("style:chart-properties", nsOD)
             if plotSheetObj.showMarkerL[nG0S]:  # showMarkerL is guaranteed to have same dimension as ycolL
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
+                for at in [NS("chart:symbol-name", nsOD), NS("chart:symbol-width", nsOD), 
+                              NS("chart:symbol-height", nsOD)]:
+                                  if elem.get(at) is not None:
+                                      del elem.attrib[at]
             else:
                 elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
 
@@ -546,6 +554,10 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                     elem = ref_series_style.find("style:chart-properties", nsOD)
                     if plotSheetObj.showMarkerL[0]:  # showMarkerL is guaranteed to have same dimension as ycol2L
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
+                        for at in [NS("chart:symbol-name", nsOD), NS("chart:symbol-width", nsOD), 
+                                      NS("chart:symbol-height", nsOD)]:
+                                          if elem.get(at):
+                                              del elem.attrib[at]
                     else:
                         elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
 
@@ -595,6 +607,10 @@ def build_chart_object_content( chart_obj, plotSheetObj ):
                 elem = new_style.find("style:chart-properties", nsOD)
                 if plotSheetObj.showMarker2L[nG1S]:  # showMarkerL is guaranteed to have same dimension as ycol2L
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "automatic")
+                    for at in [NS("chart:symbol-name", nsOD), NS("chart:symbol-width", nsOD), 
+                                  NS("chart:symbol-height", nsOD)]:
+                                      if elem.get(at):
+                                          del elem.attrib[at]
                 else:
                     elem.set("{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}symbol-type", "none")
 
