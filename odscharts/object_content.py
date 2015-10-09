@@ -1,3 +1,7 @@
+# Python 2 and 3
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
 """
 Start with an XML template of the "Object 1/content.xml" file and modify it
 for a new chart

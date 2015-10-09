@@ -4,11 +4,6 @@ TODO
 ====
 
 
-* lineStyleL MAY NOT show up in legend
-    - tries, but is not always apparent
-
-* put lineStyleL in doc strings.
-
 * Change \n to \r in all titles
     - Maybe have subtitle as input (just add to title with \r)
 
@@ -30,3 +25,7 @@ TODO
 * Date and Author on plots
 
 * Integrate xlCharts for direct COM control of Excel on Windows
+    (or Excel on Linux through Wine???)
+
+* Look into labels on chart by x,y coordinates.
+

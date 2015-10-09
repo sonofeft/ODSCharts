@@ -1,3 +1,7 @@
+# Python 2 and 3
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
 #!/usr/bin/env python
 # -*- coding: ascii -*-
 
@@ -387,6 +391,11 @@ class SpreadSheet(object):
             (Units=="mm")(default==None)
         :type  lineThk2L: list of float
 
+        :keyword lineStyleL: List of line style values to use for ycolL curves. Any curve not explicitly set will use a solid line. (see http://odscharts.readthedocs.org/en/latest/examples.html for details) (default==None)
+        :type lineStyleL: None or int list
+        :keyword lineStyle2L:List of line style values to use for ycol2L curves. Any curve not explicitly set will use a solid line. (see http://odscharts.readthedocs.org/en/latest/examples.html for details) (default==None)
+        :type lineStyle2L: None or int list
+        
         :keyword colorL: List of color values to use for ycolL curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
         :type  colorL: None or str list
         :keyword color2L: List of color values to use for ycol2L curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
@@ -506,6 +515,11 @@ class SpreadSheet(object):
         :keyword bool log2y:  Flag for Secondary Y Axis type. True=log, False=linear (default==False)
         :keyword bool showUnits: Flag to control units display. True=show units on axes, False=show labels only (default==True)
         :keyword bool excel_colors: Flag to control default color palette. True=use Excel colors, False=use custome colors.
+
+        :keyword lineStyleL: List of line style values to use for ycolL curves. Any curve not explicitly set will use a solid line. (see http://odscharts.readthedocs.org/en/latest/examples.html for details) (default==None)
+        :type lineStyleL: None or int list
+        :keyword lineStyle2L:List of line style values to use for ycol2L curves. Any curve not explicitly set will use a solid line. (see http://odscharts.readthedocs.org/en/latest/examples.html for details) (default==None)
+        :type lineStyle2L: None or int list
 
         :keyword colorL: List of color values to use for ycolL curves. Format is "#FFCC33". Any curve not explicitly set will use Excel default colors (default==None)
         :type  colorL: None or str list

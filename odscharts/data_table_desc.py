@@ -1,3 +1,7 @@
+# Python 2 and 3
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
 """
 A DataTableDesc object holds the XML logic as well as all info about a data table
 """

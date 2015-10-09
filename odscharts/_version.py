@@ -1,3 +1,7 @@
+# Python 2 and 3
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
 
 __version__ = '0.0.11'  # METADATA_RESET:__version__ = '<<version>>'
 

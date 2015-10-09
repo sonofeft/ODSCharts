@@ -1,3 +1,7 @@
+# Python 2 and 3
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
 """
 Make changes to META-INF data and Object 1-N subdirectories
 """

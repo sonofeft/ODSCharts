@@ -1,3 +1,8 @@
+# Python 2 and 3
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
+
 import sys
 from collections import OrderedDict
 import io
@@ -75,8 +80,8 @@ class TemplateXML_File(object):
                         uri = sL[0][1:]
                         self.qnameOD[qname] = '%s:%s'%(self.nsOD[uri], name)
             if event=="start-ns":
-                self.nsOD[elem[1]] = elem[0]
-                self.rev_nsOD[elem[0]] = elem[1] # reverse index into namespace
+                self.nsOD[elem[1]] = elem[0]     # like: ('urn:oasis:names:tc:opendocument:xmlns:table:1.0', u'table')
+                self.rev_nsOD[elem[0]] = elem[1] # like: (u'table', 'urn:oasis:names:tc:opendocument:xmlns:table:1.0')
 
         self.context = context
         #self.root = ET.ElementTree( context.root )
@@ -153,6 +158,7 @@ class TemplateXML_File(object):
         dummy_file = dummy()
         dummy_file.write = xml_dataL.append
 
+        # There are differences between the python2 and python3 serialize routines
         if sys.version_info < (3,):
             ET._serialize_xml(dummy_file.write, self.root, "utf-8", self.qnameOD, self.nsOD)
         else:
