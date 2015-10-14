@@ -34,7 +34,8 @@ class TemplateXML_File(object):
         xml_file_name_or_src can be a file name like: "content.xml" OR
         can be xml source.
         """
-
+        #xml_file_name_or_src = xml_file_name_or_src.decode('utf-8')
+        
         if xml_file_name_or_src.endswith('.xml') and len(xml_file_name_or_src)<256:
             self.xml_file_name_or_src = xml_file_name_or_src
 
@@ -89,12 +90,17 @@ class TemplateXML_File(object):
 
         self.parentD = {} # index=child Element object, value=parent Element object
         self.depthD = {}  # index=Element object, value = depth in xml tree
+        self.original_posD = {}  # index=Element object, value=tuple of child position (e.g. (0,3,1))
+        self.get_elem_from_orig_posD = {}  # reverse lookup of "original_posD"
+        
         self.max_depth = 0
         self.short_pathD = {} # index=Element, value = short name (like: "ns0:name1/ns1:xyz/ns3:abc")
         # After building tree, create self.parentD for all Elements
         self.parentD[self.root] = None
         self.depthD[self.root] = 0
         self.short_pathD[self.root] = self.qnameOD[ self.root.tag ] # no calc req'd... just = qname
+        
+        self.original_posD[self.root] = (0,) # tuple of position
 
         temp_short_path_counterD = {} # just used here to help count occurances of short path
         self.short_path_counterD = {} # index=Element, value=short path counter value
@@ -104,10 +110,14 @@ class TemplateXML_File(object):
 
         for parent in self.root.iter():
             try:
-                for child in parent.getchildren():
+                for ichild, child in enumerate(parent.getchildren()):
                     self.parentD[child] = parent
                     self.depthD[child] = self.depthD[parent] + 1
                     self.max_depth = max(self.max_depth, self.depthD[child])
+                    
+                    L = list(self.original_posD[parent])
+                    L.append( ichild )
+                    self.original_posD[child] = tuple( L )
 
                     short_path = self.get_short_path( child )
                     self.short_pathD[child] = short_path
@@ -119,6 +129,9 @@ class TemplateXML_File(object):
 
             except:
                 print( 'NOTICE: No children for:', parent )
+                
+        for key,item in self.original_posD.items():
+            self.get_elem_from_orig_posD[item] = key # get elem from original_posD
 
     def get_short_path(self, elem):
 
@@ -134,10 +147,21 @@ class TemplateXML_File(object):
 
     def getparent(self, child):
         return self.parentD[child]
+        
+    def get_elements_orig_pos(self, elem):
+        return self.original_posD[ elem ]
+        
+    def get_elem_at_original_pos(self, pos):
+        return self.get_elem_from_orig_posD[pos]
+        
+    def remove_original_pos(self, pos):
+        elem = self.get_elem_from_orig_posD[pos]
+        parent = self.getparent(elem)
+        self.remove_child( elem, parent )
 
     def remove_child(self, child, parent):
         parent.remove( child )
-        del self.parentD[child]
+        del self.parentD[child]  # child still in memory, just not  in dict
 
     def add_child(self, child, parent):
         self.parentD[child] = parent

@@ -102,12 +102,12 @@ class SetRep( TemplateXML_File ):
     def find_diff(self, setrep2):
         """Find the differences between SetRep objects self and setrep2"""
         
-        print self.e_setrepOD[self.root] == setrep2.e_setrepOD[setrep2.root], self.short_pathD[self.root]
+        print( self.e_setrepOD[self.root] == setrep2.e_setrepOD[setrep2.root], self.short_pathD[self.root])
         
         if self.max_depth == setrep2.max_depth:
-            print 'Both SetRep Objects have the Same Depth'
+            print( 'Both SetRep Objects have the Same Depth')
         else:
-            print 'WARNING... Different Depths: self=%i,  setrep2=%i'%(self.max_depth, setrep2.max_depth)
+            print( 'WARNING... Different Depths: self=%i,  setrep2=%i'%(self.max_depth, setrep2.max_depth))
 
         not_found_in1LL = []  # List of Lists, 1st index is depth, gives list of not found
         not_found_in2LL = []  #   at that depth
@@ -119,10 +119,13 @@ class SetRep( TemplateXML_File ):
             nfL2 = [] # list of not-found at this depth
             
             
-            print
-            print '='*20,'Depth =%i'%n,'='*20
-            eL1 = self.depth_elemD[n]
-            eL2 = setrep2.depth_elemD[n]
+            print()
+            print( '='*20,'Depth =%i'%n,'='*20)
+            try:
+                eL1 = self.depth_elemD[n]
+                eL2 = setrep2.depth_elemD[n]
+            except:
+                break
             
             e_srL1 = [self.e_setrepOD[e] for e in eL1]
             e_srL2 = [setrep2.e_setrepOD[e] for e in eL2]
@@ -130,20 +133,20 @@ class SetRep( TemplateXML_File ):
             # Look for non-found elements in self
             for i1,e_sr1 in enumerate(e_srL1):
                 if e_sr1 in e_srL2:
-                    print '.',
+                    print( '.', end='')
                 else:
-                    print '?',
-                    #print 'NOT FOUND',eL1[i1]
+                    print( '?', end='')
+                    #print( 'NOT FOUND',eL1[i1])
                     nfL1.append( eL1[i1] )
                     total_nf1 += 1
-            print
+            print()
             # Look for non-found elements in setrep2
             for i2,e_sr2 in enumerate(e_srL2):
                 if e_sr2 in e_srL1:
-                    print '.',
+                    print( '.', end='')
                 else:
-                    print '?',
-                    #print '2 NOT FOUND',eL2[i2]
+                    print( '?', end='')
+                    #print( '2 NOT FOUND',eL2[i2])
                     nfL2.append( eL2[i2] )
                     total_nf2 += 1
                     
@@ -151,12 +154,12 @@ class SetRep( TemplateXML_File ):
             not_found_in2LL.append(nfL2)
             
             if nfL1 or nfL2:
-                print
-                print 'at depth=%i, not found 1=%i, not found 2=%i, #element diff=%i'%\
-                       (n, len(nfL1), len(nfL2), len(e_srL1)-len(e_srL2))
+                print()
+                print( 'at depth=%i, not found 1=%i, not found 2=%i, #element diff=%i'%\
+                       (n, len(nfL1), len(nfL2), len(e_srL1)-len(e_srL2)) )
         
-        print
-        print '='*20,'Not Found 1 = %i'%total_nf1,'='*5,'Not Found 2 = %i'%total_nf2,'='*20
+        print()
+        print( '='*20,'Not Found 1 = %i'%total_nf1,'='*5,'Not Found 2 = %i'%total_nf2,'='*20)
         
         total_diff = total_nf1 + total_nf2
         return total_diff
@@ -195,7 +198,7 @@ class SetRep( TemplateXML_File ):
         #multi_match_elemLL = [] # list of lists of multiple matches
 
         for n in range(self.max_depth +1): # iterate over depth values
-            print '='*40 + '> Working Depth = %i'%n
+            print( '='*40 + '> Working Depth = %i'%n)
             elemL = self.depth_elemD[n]
 
             self.match_elemLL.append( [] )
@@ -204,7 +207,11 @@ class SetRep( TemplateXML_File ):
             self.partial_match_elemLL.append( [] )
             #multi_match_elemLL.append( [] )
 
-            eL2  = setrep2.depth_elemD[n]
+            try:
+                eL2  = setrep2.depth_elemD[n]
+            except:
+                break
+                
             e_srL2 = [setrep2.e_setrepOD[e2] for e2 in eL2] # build list of SetRep objects in setrep2 at depth
             for e2 in eL2:
                 self.rev_matching_elemD[e2] = None # init to None
@@ -247,8 +254,8 @@ class SetRep( TemplateXML_File ):
                         e2 = setrep2.elem_from_idD[ id(e_sr2) ]
                         
                         self.partial_match_elemLL[-1].append( (elem, e2) )
-                        print 'Found best partial match', e2
-                        print '     ',get_set_member( e_sr, startswith='PARENT' ),get_set_member( e_sr2, startswith='PARENT' )
+                        print( 'Found best partial match', e2)
+                        print( '     ',get_set_member( e_sr, startswith='PARENT' ),get_set_member( e_sr2, startswith='PARENT' ))
                         
                         # While not a perfect match, it is a partial match
                         self.unmatched_elemLL[-1].remove( (elem, e_sr) )
@@ -258,38 +265,38 @@ class SetRep( TemplateXML_File ):
             self.unmatched_elemLL2[-1].extend( e2L )
             
             #for elem, e_sr in self.unmatched_elemLL[-1]:
-            #    print '    UN:',elem
+            #    print( '    UN:',elem)
             #for e_sr2 in e_srL2:
             #    e2 = setrep2.elem_from_idD[ id(e_sr2) ]
-            #    print '   UN2:',elem
+            #    print( '   UN2:',elem)
                 
-            #print '%2i) unmatch=%2i,  multi=%2i'%(n, len(self.unmatched_elemLL[-1]), len(multi_match_elemLL[-1]))
+            #print( '%2i) unmatch=%2i,  multi=%2i'%(n, len(self.unmatched_elemLL[-1]), len(multi_match_elemLL[-1])))
             
             
-            print '%2i) delete=%2i copy=%2i modify=%2i, exact=%2i'%(n, 
+            print( '%2i) delete=%2i copy=%2i modify=%2i, exact=%2i'%(n, 
                     len(self.unmatched_elemLL[-1]), 
                     len(self.unmatched_elemLL2[-1]), 
                     len(self.partial_match_elemLL[-1]), 
-                    len(self.match_elemLL[-1]) )
+                    len(self.match_elemLL[-1]) ) )
             
             if self.unmatched_elemLL[-1]:
-                print '==>Delete These Element objects from self'
+                print( '==>Delete These Element objects from self')
                 for elem, e_sr in self.unmatched_elemLL[-1]:
-                    print '.....',elem
-                    print '.......',e_sr  #self.short_pathD[elem]
+                    print( '.....',elem)
+                    print( '.......',e_sr)  #self.short_pathD[elem]
                     
             if self.unmatched_elemLL2[-1]:
-                print '==>Copy these Elements from setrep2'
+                print( '==>Copy these Elements from setrep2')
                 for e2, e_sr2 in zip( e2L, e_srL2 ):
-                    print '.....',e2
-                    print '.......',e_sr2 #setrep2.short_pathD[e2]
+                    print( '.....',e2)
+                    print( '.......',e_sr2) #setrep2.short_pathD[e2]
 
                     
             if self.partial_match_elemLL[-1]:
-                print '==>Modify these elements in self to match setrep2'
+                print( '==>Modify these elements in self to match setrep2')
                 for e, e2 in self.partial_match_elemLL[-1]:
-                    print '...1...',self.short_pathD[e]
-                    print '....2..',setrep2.short_pathD[e2]
+                    print( '...1...',self.short_pathD[e])
+                    print( '....2..',setrep2.short_pathD[e2])
 
     def get_attrib_assignment_commands(self, elem, e2):
         """
@@ -300,9 +307,9 @@ class SetRep( TemplateXML_File ):
         
         short_path = strip_short_path( self.short_pathD[elem], num_beg=1, num_end=0)
                 
-        #print 'short_path =',short_path
+        #print( 'short_path =',short_path)
         for i, e in enumerate( self.findall( short_path ) ):
-            #print 'findall result:',e
+            #print( 'findall result:',e)
             if e==elem:
                 commandL.append( '    elem = self.content_xml_obj.findall("%s")[%i]'%(short_path, i) )
         
@@ -340,20 +347,20 @@ class SetRep( TemplateXML_File ):
             # Assume same parent findall index ONLY for top level attachment point
             e_sr2 = self.setrep2.e_setrepOD[e2]
             parent_str = get_set_member( e_sr2, startswith='PARENT' )
-            #print 'parent_str =',parent_str
-            #print '   e2 attr =',get_set_member( e_sr2, startswith='ATTR' ),get_set_member( e_sr2, startswith='TEXT' )
+            #print( 'parent_str =',parent_str)
+            #print( '   e2 attr =',get_set_member( e_sr2, startswith='ATTR' ),get_set_member( e_sr2, startswith='TEXT' ))
 
             short_path_parent2 = strip_short_path( self.setrep2.short_pathD[e2], num_beg=1, num_end=1)
             parent2 = self.setrep2.parentD[e2]
             iparent = -1
             for i, p in enumerate( self.setrep2.findall( short_path_parent2 ) ):
-                #print 'findall result:',e
+                #print( 'findall result:',e)
                 if p==parent2:
                     iparent = i # assume that parent in setrep2 is in same location as self
-            #print '  Found e2 parent at index =',iparent
-            #print '     ',short_path_parent2
+            #print( '  Found e2 parent at index =',iparent)
+            #print( '     ',short_path_parent2)
                     
-            parent_self = self.findall( short_path_parent2 )[iparent]
+            #parent_self = self.findall( short_path_parent2 )[iparent]
             
             commandL.append( '    parent = self.content_xml_obj.findall("%s")[%i]'%(short_path_parent2, iparent) )
             
@@ -365,7 +372,7 @@ class SetRep( TemplateXML_File ):
                 commandL.append( '    %s.text = "%s")'%(e2_name, e2.text) )
             
         
-        #print 'Short Paths:', short_path2, short_path_parent2
+        #print( 'Short Paths:', short_path2, short_path_parent2)
         
         return commandL
 
@@ -398,8 +405,8 @@ class SetRep( TemplateXML_File ):
         
         Now create ET commands that will create setrep2 from self.
         """
-        print '^'*77
-        print 'v'*77
+        print( '^'*77)
+        print( 'v'*77)
         
         commandL = [] # list of commands that will make self equal to setrep2
         
@@ -408,9 +415,9 @@ class SetRep( TemplateXML_File ):
         
         for n in range(self.max_depth +1): # iterate over depth values
             if self.partial_match_elemLL[n]:
-                print len(self.partial_match_elemLL[n]),'Modifications self at depth =',n
+                print( len(self.partial_match_elemLL[n]),'Modifications self at depth =',n)
             else:
-                print 'No Modifications of self at depth =',n
+                print( 'No Modifications of self at depth =',n)
                 
             for elem, e2 in self.partial_match_elemLL[n]:
                 commandL.extend( self.get_attrib_assignment_commands(elem, e2) )
@@ -421,9 +428,9 @@ class SetRep( TemplateXML_File ):
         
         for n in range(self.max_depth +1): # iterate over depth values
             if self.unmatched_elemLL2[n]:
-                print len(self.unmatched_elemLL2[n]),'Copies of e2 at depth =',n
+                print( len(self.unmatched_elemLL2[n]),'Copies of e2 at depth =',n)
             else:
-                print 'No Copying of e2 at depth =',n
+                print( 'No Copying of e2 at depth =',n)
                 
             for e2 in self.unmatched_elemLL2[n]:
                 commandL.extend( self.get_e2_copy_commands(e2) )
@@ -437,7 +444,7 @@ class SetRep( TemplateXML_File ):
                     commandL.extend( self.get_remove_command(elem) )
 
         
-        print '\n'.join(commandL)
+        print( '\n'.join(commandL))
         
         
 
@@ -463,7 +470,7 @@ class SetRep( TemplateXML_File ):
                 big_set = attr_s | attr_s2
                 size_big_set = float( len(big_set) ) + 1.0 # make sure no divide by zero
                 score += len( attr_s & attr_s2 ) / size_big_set
-                #print 'ATTR Score =',len( attr_s & attr_s2 ) / size_big_set
+                #print( 'ATTR Score =',len( attr_s & attr_s2 ) / size_big_set)
                 
                 if get_set_member( e_sr, startswith='PARENT' ) == get_set_member( e_sr, startswith='PARENT' ):
                     score += 1.0
@@ -472,10 +479,10 @@ class SetRep( TemplateXML_File ):
                 max_score = max(max_score, score)
             else:
                 scoreL.append( 0 )
-                #print 'PATH MISMATCH'
-                #print path
+                #print( 'PATH MISMATCH')
+                #print( path)
         
-        #print path,scoreL.index( max_score ), scoreL
+        #print( path,scoreL.index( max_score ), scoreL)
         
         if e_srL2 and max_score>0:
             i = scoreL.index( max_score ) # index in e_srL2 of best match to elem
@@ -506,13 +513,13 @@ if __name__ == "__main__":
 
     srA = SetRep(fileA)
     srB = SetRep(fileB)
-    print 'Max Depth =',srA.max_depth
-    print '0',srA.short_pathD[srA.root]
+    print( 'Max Depth =',srA.max_depth)
+    print( '0',srA.short_pathD[srA.root])
     for elem in srA.root:
         depth = srA.depthD[elem]
-        print '    '*depth,depth,srA.short_pathD[elem]
+        print( '    '*depth,depth,srA.short_pathD[elem])
 
-    print  '+'*55
+    print(  '+'*55)
     
     srA.find_changes_to_make_equal( srB )
     
@@ -520,14 +527,14 @@ if __name__ == "__main__":
     
     
     #sys.exit()
-    print '#'*75
-    print ' '*10,'Following is Results from "find_diff" method.'
-    print '#'*75
+    print( '#'*75)
+    print( ' '*10,'Following is Results from "find_diff" method.')
+    print( '#'*75)
     srA.find_diff( srB )
-    #print srA.e_setrepOD[srA.root] - srB.e_setrepOD[srB.root]
+    #print( srA.e_setrepOD[srA.root] - srB.e_setrepOD[srB.root])
     
     #for k,v in srA.e_setrepOD.items():
-    #    print
-    #    print v
+    #    print()
+    #    print( v)
     
  

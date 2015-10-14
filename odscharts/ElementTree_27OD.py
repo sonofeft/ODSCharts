@@ -1640,6 +1640,7 @@ class XMLParser(object):
 
     def feed(self, data):
         try:
+            data = data.encode('utf-8')
             self._parser.Parse(data, 0)
         except self._error, v:
             self._raiseerror(v)
