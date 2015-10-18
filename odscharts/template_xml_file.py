@@ -248,24 +248,24 @@ class TemplateXML_File(object):
 
         if attribOD:
             OD = self.NS_attrib( attribOD )
-            new_elem = ET.Element(tag, attrib=OD)
+            my_new_elem = ET.Element(tag, attrib=OD)
         else:
-            new_elem = ET.Element(tag)
+            my_new_elem = ET.Element(tag)
 
-        sL = new_elem.tag.split('}')
+        sL = my_new_elem.tag.split('}')
         if len(sL) == 2:
             name = sL[1]
             uri = sL[0][1:]
-            self.qnameOD[new_elem.tag] = '%s:%s'%(self.nsOD[uri], name)
+            self.qnameOD[my_new_elem.tag] = '%s:%s'%(self.nsOD[uri], name)
 
-        for qname,v in new_elem.attrib.items():
+        for qname,v in my_new_elem.attrib.items():
             sL = qname.split('}')
             if len(sL) == 2:
                 name = sL[1]
                 uri = sL[0][1:]
                 self.qnameOD[qname] = '%s:%s'%(self.nsOD[uri], name)
 
-        return new_elem
+        return my_new_elem
 
 if __name__ == "__main__":
 
