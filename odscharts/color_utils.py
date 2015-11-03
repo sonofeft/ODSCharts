@@ -191,6 +191,7 @@ def getValidHexStr( name_or_hex, c_default):
     If name_or_hex is not valid, return c_default
     """
     c = '%s'%name_or_hex
+    c = c.strip()
     #print('(c=%s)'%c, end='')
     c = c.lower()
 
